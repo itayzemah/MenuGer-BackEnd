@@ -2,6 +2,7 @@ package mg.logic;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
+import mg.data.entities.IngredientTypeEnum;
 
 public interface IngredientService {
 
@@ -12,6 +13,12 @@ public interface IngredientService {
 	public Response<Void> update(IngredientBoundary ingredientBoundary);
 
 	public Response<IngredientBoundary> findById(Long ingredientId);
+
+	public Response<IngredientBoundary[]> findByName(String name);
+
+	public Response<IngredientBoundary[]> getAll(int size, int page);
+
+	public Response<IngredientBoundary[]> getAllByType(String userEmail, IngredientTypeEnum type, int size, int page);
 
 
 	
