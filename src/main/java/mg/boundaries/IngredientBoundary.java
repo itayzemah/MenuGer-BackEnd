@@ -1,7 +1,5 @@
 package mg.boundaries;
 
-import javax.persistence.Id;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +15,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class IngredientBoundary {
-	private @NonNull @Id Long id;
+	private @NonNull Long id;
 	private @NonNull String name;
 	
 	

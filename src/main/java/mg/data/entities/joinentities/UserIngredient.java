@@ -33,7 +33,7 @@ public class UserIngredient {
 	private UserEntity user;
 
 	@ManyToOne
-    @MapsId("ingredientID")
+    @MapsId("ingredientId")
     @JoinColumn(name = "ingredient_id")
 	private IngredientEntity ingredient;
 

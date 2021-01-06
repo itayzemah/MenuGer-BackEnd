@@ -26,9 +26,9 @@ import mg.data.entities.joinentities.UserIngredient;
 @Entity
 @Table(name= "INGREDIENTS")
 public class IngredientEntity {
-    @Id
+   
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+    @Id private long id;
     private String name;
 
     @OneToMany(mappedBy = "ingredient")

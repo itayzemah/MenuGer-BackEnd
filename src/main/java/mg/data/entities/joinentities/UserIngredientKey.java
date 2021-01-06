@@ -23,9 +23,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Embeddable
 public class UserIngredientKey implements Serializable {
+	
 	private static final long serialVersionUID = -2216018707601921086L;
-    @Column(name = "user_email")
-	public @NonNull String userEmail;
-    @Column(name = "ingredient_id")
-    public @NonNull String ingredientID;
+    
+	@Column(name = "user_email")
+	private @NonNull String userEmail;
+    
+	@Column(name = "ingredient_id")
+	private long ingredientId;
 }
