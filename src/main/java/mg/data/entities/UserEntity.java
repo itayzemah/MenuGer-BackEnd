@@ -3,6 +3,7 @@ package mg.data.entities;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,7 +30,7 @@ public class UserEntity {
 	private String fullName;
 	private String gender;
 	
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
 	private Set<UserIngredient> userIngredients;
 	
 }

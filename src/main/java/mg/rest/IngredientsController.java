@@ -29,6 +29,13 @@ public class IngredientsController {
 	}
 
 	@RequestMapping
+	(path="/{name}", method = RequestMethod.GET,
+	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<IngredientBoundary[]> findByName(@PathVariable String name){
+		return ingredientService.findByName(name);
+	}
+
+	@RequestMapping
 	(method = RequestMethod.GET,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<IngredientBoundary[]> getAll(
@@ -40,19 +47,12 @@ public class IngredientsController {
 	@RequestMapping
 	(path="/by/type", method = RequestMethod.GET,
 	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary[]> getAllForbOf(
+	public Response<IngredientBoundary[]> getAllByType(
 			@RequestParam(name = "user", required = true, defaultValue = "") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size){
 		return ingredientService.getAllByType(userEmail,type,size, page);
-	}
-	
-	@RequestMapping
-	(path="/{name}", method = RequestMethod.GET,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary[]> findByName(@PathVariable String name){
-		return ingredientService.findByName(name);
 	}
 	
 	@RequestMapping
@@ -62,10 +62,11 @@ public class IngredientsController {
 		return ingredientService.create(ingredientBoundary);
 	}
 	
+	
 	@RequestMapping
 	(method = RequestMethod.PUT,
 	consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Response<Void> remove(@RequestBody IngredientBoundary ingredientBoundary){
+	public Response<Void> update(@RequestBody IngredientBoundary ingredientBoundary){
 		return ingredientService.update(ingredientBoundary);
 	}
 	

@@ -2,6 +2,7 @@ package mg.data.entities.joinentities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -21,18 +22,18 @@ import mg.data.entities.UserEntity;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity
+@Entity(name="user_ingredient")
 public class UserIngredient {
 
 	@EmbeddedId
 	private UserIngredientKey id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("userEmail")
 	@JoinColumn(name = "user_email")
 	private UserEntity user;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
     @MapsId("ingredientId")
     @JoinColumn(name = "ingredient_id")
 	private IngredientEntity ingredient;

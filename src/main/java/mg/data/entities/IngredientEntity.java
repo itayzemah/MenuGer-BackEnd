@@ -3,6 +3,7 @@ package mg.data.entities;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,6 +32,6 @@ public class IngredientEntity {
     @Id private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "ingredient")
+    @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
     private Set<UserIngredient> userIngredients;
 }

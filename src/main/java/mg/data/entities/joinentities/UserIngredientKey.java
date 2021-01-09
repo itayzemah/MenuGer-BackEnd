@@ -27,8 +27,8 @@ public class UserIngredientKey implements Serializable {
 	private static final long serialVersionUID = -2216018707601921086L;
     
 	@Column(name = "user_email")
-	private @NonNull String userEmail;
+	private @NonNull String useremail;
     
 	@Column(name = "ingredient_id")
-	private Long ingredientId;
+	private @NonNull Long ingredientid;
 }
