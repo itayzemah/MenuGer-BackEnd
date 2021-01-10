@@ -12,8 +12,6 @@ import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
 import mg.data.converters.IngredientConverter;
 import mg.data.dal.IngredientDataAccessRepo;
-import mg.data.dal.UserDataAccessRepo;
-import mg.data.entities.IngredientTypeEnum;
 import mg.logic.IngredientService;
 
 @Service
@@ -89,11 +87,7 @@ public class IngredientServiceImpl implements IngredientService {
 		return rv;
 	}
 
-	@Override
-	public Response<IngredientBoundary[]> getAllByType(String userEmail, IngredientTypeEnum type, int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	
 

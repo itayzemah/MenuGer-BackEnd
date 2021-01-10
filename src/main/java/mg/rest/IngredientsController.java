@@ -44,16 +44,6 @@ public class IngredientsController {
 		return ingredientService.getAll(size, page);
 	}
 	
-	@RequestMapping
-	(path="/by/type", method = RequestMethod.GET,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary[]> getAllByType(
-			@RequestParam(name = "user", required = true, defaultValue = "") String userEmail,
-			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size){
-		return ingredientService.getAllByType(userEmail,type,size, page);
-	}
 	
 	@RequestMapping
 	(method = RequestMethod.POST,

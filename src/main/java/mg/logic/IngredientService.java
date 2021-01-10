@@ -18,11 +18,5 @@ public interface IngredientService {
 
 	public Response<IngredientBoundary[]> getAll(int size, int page);
 
-	public Response<IngredientBoundary[]> getAllByType(String userEmail, IngredientTypeEnum type, int size, int page);
-
-
-
-	
-	
 
 }
