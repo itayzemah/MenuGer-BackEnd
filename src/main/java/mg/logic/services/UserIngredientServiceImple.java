@@ -81,14 +81,14 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		List<IngredientBoundary> lstP= new ArrayList<>();
 		
 		lst.forEach(i-> {
-			if(i.getType() == IngredientTypeEnum.PREFERRED.toString()) {
+			if(i.getType().equals(IngredientTypeEnum.PREFERRED.name())) {
 				lstP.add(this.ingredientConverter.toBoundary(i.getIngredient()));
 			}else {
 				lstF.add(this.ingredientConverter.toBoundary(i.getIngredient()));
 			}
 		});
-		map.put(IngredientTypeEnum.FORBIDDEN.name(),lstP.toArray(new IngredientBoundary[0]));
-		map.put(IngredientTypeEnum.PREFERRED.name(),lstF.toArray(new IngredientBoundary[0]));
+		map.put(IngredientTypeEnum.PREFERRED.name(),lstP.toArray(new IngredientBoundary[0]));
+		map.put(IngredientTypeEnum.FORBIDDEN.name(),lstF.toArray(new IngredientBoundary[0]));
 		rv.setData(map);
 		return rv;
 	}
