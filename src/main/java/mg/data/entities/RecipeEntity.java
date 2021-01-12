@@ -14,10 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import mg.data.entities.joinentities.RecipeIngredient;
-import mg.data.entities.joinentities.UserIngredient;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,16 +26,16 @@ import mg.data.entities.joinentities.UserIngredient;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name= "INGREDIENTS")
-public class IngredientEntity {
-   
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private Long id;
-    private String name;
+@Table(name= "RECIPES")
+public class RecipeEntity {
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id private long RecipeId ;
+	 private @NonNull String Name;
+	 private String Prepartion;
+	 private String CreatedBy ;
+	 
+	 @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
+	    private Set<RecipeIngredient> recipeIngredients;
 
-    @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
-    private Set<UserIngredient> userIngredients;
-    
-    @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
-	 private Set<RecipeIngredient> recipeIngredients;
+	
 }

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mg.data.entities.IngredientEntity;
-import mg.data.entities.UserEntity;
+import mg.data.entities.RecipeEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,20 +22,21 @@ import mg.data.entities.UserEntity;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity(name="user_ingredient")
-public class UserIngredient {
+@Entity(name="recipe_ingredient")
+public class RecipeIngredient {
 	@EmbeddedId
-	private UserIngredientKey id;
-
+	private RecipeIngredientId id;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("userEmail")
-	@JoinColumn(name = "user_email")
-	private UserEntity user;
+	@MapsId("recipeId")
+	@JoinColumn(name = "recipe_id")
+	private RecipeEntity recipe;
 
 	@ManyToOne(fetch = FetchType.LAZY)
     @MapsId("ingredientId")
     @JoinColumn(name = "ingredient_id")
 	private IngredientEntity ingredient;
 
-	private String type;
+	private double ammount;
+	
 }
