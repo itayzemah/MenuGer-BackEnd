@@ -1,11 +1,9 @@
 package mg.data.entities.joinentities;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import lombok.NoArgsConstructor;
 import mg.boundaries.UserBoundary;
 import mg.data.entities.UserEntity;
-import mg.data.entities.joinentities.UserIngredient;
 
 @NoArgsConstructor
 @Component

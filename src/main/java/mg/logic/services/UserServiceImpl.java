@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
 		if (isUserExist(user.getEmail())) {
 			throw new UserAlreadyExistException(user.getEmail());
 		}
+		// TODO check if user email is empty, consider validate email pattern by regex as well
 		Response<UserBoundary> rv = new Response<>();
 		rv.setData(this.userConverter.toBoundary(this.userDAL.save(this.userConverter.fromBoundary(user))));
 		return rv;
