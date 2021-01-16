@@ -4,7 +4,6 @@ import java.util.Map;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
-import mg.data.entities.IngredientTypeEnum;
 
 public interface UserIngredientService {
 

@@ -2,7 +2,6 @@ package mg.logic;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
-import mg.data.entities.IngredientTypeEnum;
 
 public interface IngredientService {
 

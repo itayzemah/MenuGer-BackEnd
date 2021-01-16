@@ -1,7 +1,5 @@
 package mg.logic;
 
-import java.util.List;
-
 import mg.boundaries.Response;
 import mg.boundaries.UserBoundary;
 import mg.boundaries.helper.UserLoginBoundary;

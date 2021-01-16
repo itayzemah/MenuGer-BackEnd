@@ -3,6 +3,7 @@ package mg.rest;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import mg.boundaries.Response;
 import mg.data.entities.IngredientTypeEnum;
 import mg.logic.UserIngredientService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(path = "/useringredient")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +31,7 @@ public class UserIngredientController {
 			@PathVariable("ingredientId") long ingredientId) {
 		userIngreService.update(userEmail, ingredientId, type.toString());
 	}
-	@RequestMapping(path = "/bind/{userEmail}", method = RequestMethod.POST)
+	@RequestMapping(path = "/bind/{userEmail}", method = RequestMethod.PUT)
 	public void bind(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestBody Long[] ingredients) {
