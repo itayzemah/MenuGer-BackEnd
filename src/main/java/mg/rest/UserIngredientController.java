@@ -23,7 +23,8 @@ public class UserIngredientController {
 	private UserIngredientService userIngreService;
 
 	@RequestMapping(path = "/update/{userEmail}/{ingredientId}", method = RequestMethod.PUT)
-	public void update(@PathVariable("userEmail") String userEmail,
+	public void update(
+			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@PathVariable("ingredientId") long ingredientId) {
 		userIngreService.update(userEmail, ingredientId, type.toString());

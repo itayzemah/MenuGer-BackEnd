@@ -7,4 +7,8 @@ public interface RecipeService {
 
 	Response<RecipeBoundary> create(RecipeBoundary recipe);
 
+	Response<RecipeBoundary[]> getAll(int page, int size);
+
+	Response<RecipeBoundary> getByName(int page, int size);
+
 }

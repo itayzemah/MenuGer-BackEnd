@@ -2,6 +2,7 @@ package mg.data.entities;
 
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,16 +27,17 @@ import mg.data.entities.joinentities.RecipeIngredient;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name= "RECIPES")
+@Table(name = "RECIPES")
 public class RecipeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private long RecipeId ;
-	 private @NonNull String Name;
-	 private String Prepartion;
-	 private String CreatedBy ;
-	 
-	 @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
-	    private Set<RecipeIngredient> recipeIngredients;
+	@Id
+	private long recipeId;
+	@Column(unique = true)
+	private @NonNull String Name;
+	private String prepartion;
+	private String createdBy;
 
-	
+	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+	private Set<RecipeIngredient> recipeIngredients;
+
 }

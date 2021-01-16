@@ -2,9 +2,11 @@ package mg.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +24,22 @@ public class RecipeController {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary> create(@RequestBody RecipeBoundary recipe) {
 		return this.recipeService.create(recipe);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary[]> getAll(
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
+		) {
+		return this.recipeService.getAll(page,size);
+	}
+	
+	@RequestMapping(path="/by/name/{name}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary> getByName(
+			@PathVariable("name") String name,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
+			) {
+		return this.recipeService.getByName(page,size);
 	}
 }
