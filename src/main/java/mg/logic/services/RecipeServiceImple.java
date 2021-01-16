@@ -16,16 +16,15 @@ import mg.data.dal.IngredientDataAccessRepo;
 import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.dal.RecipeIngredientDataAccessLayerRepo;
 import mg.data.entities.RecipeEntity;
+import mg.logic.RecipeIngredientService;
 import mg.logic.RecipeService;
 
 @Service
 @NoArgsConstructor
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class RecipeServiceImple implements RecipeService {
-	private RecipeIngredientDataAccessLayerRepo recipeIngreDal;
 	private RecipeDataAccessLayerRepo recipeDal;
-	private IngredientDataAccessRepo ingredientDAL;
-
+	private RecipeIngredientService recipeIngreService;
 	private RecipeConverter recipeConverter;
 
 	@Override
@@ -38,19 +37,30 @@ public class RecipeServiceImple implements RecipeService {
 		return rv;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Response<RecipeBoundary[]> getAll(int page, int size) {
 		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
-		RecipeBoundary[] RecipeArr = recipeDal.findAll(PageRequest.of(page, size)).stream()
+		RecipeBoundary[] recipeArr = recipeDal.findAll(PageRequest.of(page, size)).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
-		rv.setData(RecipeArr);
+		for (int i = 0; i < recipeArr.length; i++) {
+			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
+		}
+		rv.setData(recipeArr);
 		return rv;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
-	public Response<RecipeBoundary> getByName(int page, int size) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response<RecipeBoundary[]> getByName(String name, int page, int size) {
+		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
+		RecipeBoundary[] recipeArr = this.recipeDal.findAllByName(name, PageRequest.of(page, size)).stream().map(this.recipeConverter::toBoundary)
+				.collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
+		for (int i = 0; i < recipeArr.length; i++) {
+			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
+		}
+		rv.setData(recipeArr);
+		return rv;
 	}
 
 }

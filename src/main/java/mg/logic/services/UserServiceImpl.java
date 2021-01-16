@@ -2,6 +2,8 @@ package mg.logic.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +41,13 @@ public class UserServiceImpl implements UserService {
 		if (isUserExist(user.getEmail())) {
 			throw new UserAlreadyExistException(user.getEmail());
 		}
-		// TODO check if user email is empty, consider validate email pattern by regex as well
+		emailValidationCheck(user.getEmail());
 		Response<UserBoundary> rv = new Response<>();
 		rv.setData(this.userConverter.toBoundary(this.userDAL.save(this.userConverter.fromBoundary(user))));
 		return rv;
 	}
 
+	@Transactional
 	@Override
 	public Response<UserBoundary> unsubscribe(UserLoginBoundary user) {
 		Response<UserBoundary> rv = new Response<>();
@@ -93,6 +96,19 @@ public class UserServiceImpl implements UserService {
 				.collect(Collectors.toList());
 		rv.setData(lst.toArray(new UserBoundary[0]));
 		return rv;
+	}
+	
+	private void emailValidationCheck(String email) {
+		if (email == null) {
+			throw new RuntimeException("invalid Email");
+		}
+		String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+		Pattern pattern = Pattern.compile(regex);
+
+		Matcher matcher = pattern.matcher(email);
+		if (!matcher.matches()) {
+			throw new RuntimeException("invalid Email");
+		}
 	}
 
 }

@@ -15,10 +15,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class IngredientBoundary {
-	private  Long id;
-	private @NonNull String name;
-	
-	
-	
-	
+	private Long id;
+	@NonNull
+	private String name;
+
 }

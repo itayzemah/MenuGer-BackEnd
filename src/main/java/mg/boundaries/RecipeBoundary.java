@@ -17,9 +17,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class RecipeBoundary {
-	 private long RecipeId ;
-	 private @NonNull String Name;
-	 private Map<String, Double> Ingredients;
-	 private String Prepartion;
-	 private String CreatedBy ;
+	 private long recipeId ;
+	 private @NonNull String name;
+	 private Map<String, Double> ingredients;
+	 private String prepartion;
+	 private String createdBy ;
 }

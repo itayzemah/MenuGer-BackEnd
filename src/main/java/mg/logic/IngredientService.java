@@ -17,5 +17,7 @@ public interface IngredientService {
 
 	public Response<IngredientBoundary[]> getAll(int size, int page);
 
+	public Response<Void> removeAll();
+
 
 }

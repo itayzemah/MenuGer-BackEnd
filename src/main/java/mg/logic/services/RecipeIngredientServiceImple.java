@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import mg.data.dal.IngredientDataAccessRepo;
@@ -25,6 +26,7 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 	private RecipeIngredientDataAccessLayerRepo recipeIngreDAL;
 	private RecipeDataAccessLayerRepo recipeDAL;
 
+	@Transactional
 	@Override
 	public void update(long recipeId, long ingredientId, double ammount) {
 		RecipeIngredient ri = new RecipeIngredient();
@@ -37,12 +39,14 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 		recipeIngreDAL.save(ri);
 	}
 
+	@Transactional
 	@Override
 	public void bind(long recipeId, List<RecipeIngreHelper> recipeIngreHelper) {
 		recipeIngreHelper.forEach(i -> this.update(recipeId, i.getIngredientId(), i.getAmmount()));
 
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Map<String, Double> getAllForRecipe(long recipeId) {
 		Map<String, Double> rv = new HashMap<>();
@@ -51,6 +55,7 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 		return rv;
 	}
 
+	@Transactional
 	@Override
 	public void remove(long recipeId, long ingredientId) {
 		this.recipeIngreDAL.deleteById(new RecipeIngredientId(recipeId, ingredientId));

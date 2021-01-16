@@ -31,6 +31,7 @@ public class IngredientServiceImpl implements IngredientService {
 		} else {
 			rv.setData(this.converter
 					.toBoundary(this.ingredientDAL.save(this.converter.fromBoundary(ingredientBoundary))));
+			
 		}
 		return rv;
 	}
@@ -53,7 +54,10 @@ public class IngredientServiceImpl implements IngredientService {
 		if (!this.ingredientDAL.existsById(ingredientBoundary.getId())) {
 			rv.setSuccess(false);
 			rv.setMessage("No Ingredient with this Id");
-		} else {
+		} else if (ingredientBoundary.getName() == null || ingredientBoundary.getName().isEmpty()) {
+			rv.setSuccess(false);
+			rv.setMessage("Name of Ingredient can not be empty");
+		} else{
 			this.ingredientDAL.save(this.converter.fromBoundary(ingredientBoundary));
 		}
 		return rv;
@@ -84,6 +88,13 @@ public class IngredientServiceImpl implements IngredientService {
 		Response<IngredientBoundary[]> rv = new Response<>();
 		rv.setData(this.ingredientDAL.findAll(PageRequest.of(page, size)).stream().map(this.converter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
+		return rv;
+	}
+
+	@Override
+	public Response<Void> removeAll() {
+		Response<Void> rv= new Response<Void>();
+		this.ingredientDAL.deleteAll();
 		return rv;
 	}
 

@@ -9,6 +9,6 @@ public interface RecipeService {
 
 	Response<RecipeBoundary[]> getAll(int page, int size);
 
-	Response<RecipeBoundary> getByName(int page, int size);
+	Response<RecipeBoundary[]> getByName(String name, int page, int size);
 
 }

@@ -33,7 +33,7 @@ public class RecipeEntity {
 	@Id
 	private long recipeId;
 	@Column(unique = true)
-	private @NonNull String Name;
+	private @NonNull String name;
 	private String prepartion;
 	private String createdBy;
 

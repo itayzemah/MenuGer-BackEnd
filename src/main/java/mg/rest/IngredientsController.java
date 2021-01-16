@@ -1,14 +1,19 @@
 package mg.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import lombok.AllArgsConstructor;
 import mg.boundaries.IngredientBoundary;
@@ -23,15 +28,15 @@ public class IngredientsController {
 	private IngredientService ingredientService;
 	
 	@RequestMapping
-	(path="/{id}", method = RequestMethod.GET,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	(path="id/{id}", method = RequestMethod.GET,
+	produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<IngredientBoundary> findById(@PathVariable("id") long ingredientId){
 		return ingredientService.findById(ingredientId);
 	}
 
 	@RequestMapping
-	(path="/{name}", method = RequestMethod.GET,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	(path="name/{name}", method = RequestMethod.GET,
+	produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<IngredientBoundary[]> findByName(@PathVariable String name){
 		return ingredientService.findByName(name);
 	}
@@ -62,17 +67,32 @@ public class IngredientsController {
 	}
 	
 	@RequestMapping
-	(method = RequestMethod.DELETE,
+	(path = "{ingredientId}", method = RequestMethod.DELETE,
 	consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Response<Void> remove(Long ingredientId){
+	public Response<Void> remove(@PathVariable Long ingredientId){
 		return ingredientService.remove(ingredientId);
 	}
 	
+	@RequestMapping
+	(method = RequestMethod.DELETE,
+	consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Response<Void> removeAll(){
+		return ingredientService.removeAll();
+	}
 	
-	
-	
-	
-	
+	@ExceptionHandler
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public Response<String> handleException(SQLServerException e) {
+		Response<String> response = new Response<String>();
+		String error = e.getMessage();
+		if (error == null) {
+			error = "Not found";
+		}
+		response.setData(error);
+		response.setSuccess(false);
+		response.setMessage(error);
+		return response;
+	}
 	
 	
 }

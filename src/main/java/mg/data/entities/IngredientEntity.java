@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -27,12 +28,12 @@ import mg.data.entities.joinentities.UserIngredient;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name= "INGREDIENTS")
+@Table(name= "INGREDIENTS",uniqueConstraints= {@UniqueConstraint(columnNames = {"name"})})
 public class IngredientEntity {
    
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
-    @Column(unique = true)
+    @Column(nullable =false)
     private String name;
 
     @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
