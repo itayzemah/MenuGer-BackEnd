@@ -36,6 +36,8 @@ public class IngredientEntity {
     @Column(nullable =false)
     private String name;
 
+    private String ingredientGroup;
+    
     @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
     private Set<UserIngredient> userIngredients;
     
