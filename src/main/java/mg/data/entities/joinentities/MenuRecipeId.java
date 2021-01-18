@@ -13,6 +13,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,12 +21,12 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Embeddable
-public class UserIngredientKey implements Serializable {
+public class MenuRecipeId implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "user_email")
-	private @NonNull String useremail;
+	@Column(name = "recipe_id")
+	private @NonNull Long recipeId;
     
-	@Column(name = "ingredient_id")
-	private @NonNull Long ingredientid;
+	@Column(name = "menu_id")
+	private @NonNull Long menuId;
 }

@@ -41,6 +41,6 @@ public class IngredientEntity {
     @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
     private Set<UserIngredient> userIngredients;
     
-    @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
 	 private Set<RecipeIngredient> recipeIngredients;
 }
