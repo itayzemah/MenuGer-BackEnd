@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class MenuBuilderBoundary {
+	
 	private Long[] recipeId;
 	private String userEmail;
 }
