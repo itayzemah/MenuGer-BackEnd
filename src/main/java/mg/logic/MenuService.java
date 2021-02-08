@@ -12,6 +12,6 @@ public interface MenuService {
 
 	public MenuBoundary buildMenu(String userEmail, Long[] recipeId);
 
-	public MenuBoundary searchMenu(Date fromDate, Date toDate);
+	public MenuBoundary[] searchMenu(Date fromDate, Date toDate);
 
 }

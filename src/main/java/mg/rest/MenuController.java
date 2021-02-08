@@ -40,9 +40,9 @@ public class MenuController {
 	public MenuBoundary buildMenu(@RequestBody MenuBuilderBoundary menubuilderBoundary) {
 		return menuService.buildMenu(menubuilderBoundary.getUserEmail(), menubuilderBoundary.getRecipeId());
 	}
-	
+
 	@RequestMapping(path = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public MenuBoundary searchBetweenDatesCreated(@RequestBody MenuSearchBoundary menuSearchBoundary) {
+	public MenuBoundary[] searchBetweenDatesCreated(@RequestBody MenuSearchBoundary menuSearchBoundary) {
 		return menuService.searchMenu(menuSearchBoundary.getFromDate(), menuSearchBoundary.getToDate());
 	}
 

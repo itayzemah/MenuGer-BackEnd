@@ -78,9 +78,10 @@ public class MenuServiceImple implements MenuService {
 	public MenuBoundary[] getAll(String userEmail, int page, int size) {
 		List<MenuBoundary> lst = this.menuDAL.findAll(PageRequest.of(page, size)).stream()
 				.map(this.menuConverter::toBoundary).collect(Collectors.toList());
-		lst.forEach(m -> m.setRecipes(this.menuRecipeService.getAllForMenu(m.getId())));
-		return lst.toArray(new MenuBoundary[0]);
+		return linkRecipesAndConvertToArr(lst);
 	}
+
+
 
 	@Override
 	public MenuBoundary buildMenu(String userEmail, Long[] recipeId) {
@@ -105,8 +106,18 @@ public class MenuServiceImple implements MenuService {
 
 
 	@Override
-	public MenuBoundary searchMenu(Date fromDate, Date toDate) {
-		// TODO Auto-generated method stub
-		return null;
+	public MenuBoundary[] searchMenu(Date fromDate, Date toDate) {
+		List<MenuBoundary> entities = this.menuDAL.findAllByTimestampBetween(fromDate,toDate)
+				.stream()
+				.map(this.menuConverter::toBoundary)
+				.collect(Collectors.toList());
+		return linkRecipesAndConvertToArr(entities);
+	}
+	
+
+
+	private MenuBoundary[] linkRecipesAndConvertToArr(List<MenuBoundary> lst) {
+		lst.forEach(m -> m.setRecipes(this.menuRecipeService.getAllForMenu(m.getId())));
+		return lst.toArray(new MenuBoundary[0]);
 	}
 }
