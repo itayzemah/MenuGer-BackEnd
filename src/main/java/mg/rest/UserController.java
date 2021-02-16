@@ -59,8 +59,8 @@ public class UserController {
 		return this.userService.login(user);
 	}
 	@RequestMapping
-	(path="/update", method = RequestMethod.POST,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	(method = RequestMethod.PUT,
+	consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateUser(@RequestBody UserBoundary user) {
 		this.userService.updateUser(user);
 	}
