@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Boolean isUserExist(String userEmail) {
-
 		return userDAL.existsById(userEmail);
 	}
 
@@ -82,10 +81,24 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public void updateUser(UserBoundary user) {
+	public void updateUser(UserBoundary update) {
 		UserBoundary userFromDB = userConverter.toBoundary(
-				userDAL.findById(user.getEmail()).orElseThrow(() -> new UserNotFoundException(user.getEmail())));
+				userDAL.findById(update.getEmail()).orElseThrow(() -> new UserNotFoundException(update.getEmail())));
+		userFromDB = this.mergeAndUpdate(userFromDB,update);
 		this.userDAL.save(userConverter.fromBoundary(userFromDB));
+	}
+
+	private UserBoundary mergeAndUpdate(UserBoundary base, UserBoundary update) {
+		if(update.getEmail()!= null && !update.getEmail().equalsIgnoreCase(base.getEmail())) {
+			base.setEmail(base.getEmail());
+		}
+		if(update.getFullName()!= null && !update.getFullName().equalsIgnoreCase(base.getFullName())) {
+			base.setFullName(base.getFullName());
+		}
+		if(update.getGender()!= null && !update.getGender().equalsIgnoreCase(base.getGender())) {
+			base.setGender(base.getGender());
+		}
+		return base;
 	}
 
 	@Transactional(readOnly = true)
@@ -97,7 +110,7 @@ public class UserServiceImpl implements UserService {
 		rv.setData(lst.toArray(new UserBoundary[0]));
 		return rv;
 	}
-	
+
 	private void emailValidationCheck(String email) {
 		if (email == null) {
 			throw new RuntimeException("invalid Email");

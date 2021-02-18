@@ -31,13 +31,22 @@ public class UserIngredientController {
 			@PathVariable("ingredientId") long ingredientId) {
 		userIngreService.update(userEmail, ingredientId, type.toString());
 	}
+	
+	
 	@RequestMapping(path = "/bind/{userEmail}", method = RequestMethod.PUT)
 	public void bind(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestBody Long[] ingredients) {
 		userIngreService.bind(userEmail, ingredients, type.toString());
 	}
+	
+	@RequestMapping(path = "/bind/{userEmail}", method = RequestMethod.DELETE)
+	public void unbind(@PathVariable("userEmail") String userEmail,
+			@RequestBody Long[] ingredients) {
+		userIngreService.unbind(userEmail, ingredients);
+	}
 
+	
 	@RequestMapping(path = "by/type/{userEmail}", method = RequestMethod.GET)
 	public Response<IngredientBoundary[]> getAllIngreOfUserByType(
 			@PathVariable("userEmail") String userEmail,

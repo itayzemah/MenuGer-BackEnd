@@ -24,6 +24,8 @@ import mg.data.entities.UserEntity;
 import mg.data.entities.joinentities.UserIngredient;
 import mg.data.entities.joinentities.UserIngredientKey;
 import mg.logic.UserIngredientService;
+import mg.logic.exceptions.IngredientNotFoundException;
+import mg.logic.exceptions.UserNotFoundException;
 
 @Service
 @NoArgsConstructor
@@ -36,14 +38,10 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 	@Override
 	public void update(String userEmail, long ingredientId, String type) {
-		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId).orElseGet(() -> {
-			// TODO check ingre exist
-			return null;
-		});
-		UserEntity userEntity = this.userDAL.findById(userEmail).orElseGet(() -> {
-			// TODO check user exist
-			return null;
-		});
+		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
+				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
+		UserEntity userEntity = this.userDAL.findById(userEmail)
+				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 		UserIngredient userIngredient = new UserIngredient();
 		userIngredient.setIngredient(ingreEntity);
 		userIngredient.setUser(userEntity);
@@ -62,12 +60,10 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			return rv;
 		}
 
-		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type, PageRequest.of(page, size));
-		rv.setData(lst.stream()
-				.map((ui) -> ui.getIngredient())
-				.map(this.ingredientConverter::toBoundary)
-				.collect(Collectors.toList())
-				.toArray(new IngredientBoundary[0]));
+		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
+				PageRequest.of(page, size));
+		rv.setData(lst.stream().map((ui) -> ui.getIngredient()).map(this.ingredientConverter::toBoundary)
+				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
 		return rv;
 	}
 
@@ -76,19 +72,19 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		Response<Map<String, IngredientBoundary[]>> rv = new Response<Map<String, IngredientBoundary[]>>();
 		Map<String, IngredientBoundary[]> map = new HashMap<String, IngredientBoundary[]>();
 		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_Email(userEmail, PageRequest.of(page, size));
-		
+
 		List<IngredientBoundary> lstF = new ArrayList<>();
-		List<IngredientBoundary> lstP= new ArrayList<>();
-		
-		lst.forEach(i-> {
-			if(i.getType().equals(IngredientTypeEnum.PREFERRED.name())) {
+		List<IngredientBoundary> lstP = new ArrayList<>();
+
+		lst.forEach(i -> {
+			if (i.getType().equals(IngredientTypeEnum.PREFERRED.name())) {
 				lstP.add(this.ingredientConverter.toBoundary(i.getIngredient()));
-			}else {
+			} else {
 				lstF.add(this.ingredientConverter.toBoundary(i.getIngredient()));
 			}
 		});
-		map.put(IngredientTypeEnum.PREFERRED.name(),lstP.toArray(new IngredientBoundary[0]));
-		map.put(IngredientTypeEnum.FORBIDDEN.name(),lstF.toArray(new IngredientBoundary[0]));
+		map.put(IngredientTypeEnum.PREFERRED.name(), lstP.toArray(new IngredientBoundary[0]));
+		map.put(IngredientTypeEnum.FORBIDDEN.name(), lstF.toArray(new IngredientBoundary[0]));
 		rv.setData(map);
 		return rv;
 	}
@@ -99,6 +95,13 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			this.update(userEmail, ingredients[i], type);
 		}
 
+	}
+	
+	@Override
+	public void unbind(String userEmail, Long[] ingredients) {
+		for (int i = 0; i < ingredients.length; i++) {
+			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail,ingredients[i]));
+		}
 	}
 
 }

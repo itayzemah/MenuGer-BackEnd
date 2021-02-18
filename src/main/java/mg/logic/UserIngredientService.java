@@ -13,6 +13,8 @@ public interface UserIngredientService {
 
 	public void bind(String userEmail, Long[] ingredients, String type);
 
-	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);	
+	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);
+
+	void unbind(String userEmail, Long[] ingredients);	
 	
 }
