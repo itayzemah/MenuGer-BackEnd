@@ -89,14 +89,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private UserBoundary mergeAndUpdate(UserBoundary base, UserBoundary update) {
-		if(update.getEmail()!= null && !update.getEmail().equalsIgnoreCase(base.getEmail())) {
-			base.setEmail(base.getEmail());
-		}
 		if(update.getFullName()!= null && !update.getFullName().equalsIgnoreCase(base.getFullName())) {
-			base.setFullName(base.getFullName());
+			base.setFullName(update.getFullName());
 		}
 		if(update.getGender()!= null && !update.getGender().equalsIgnoreCase(base.getGender())) {
-			base.setGender(base.getGender());
+			base.setGender(update.getGender());
 		}
 		return base;
 	}
