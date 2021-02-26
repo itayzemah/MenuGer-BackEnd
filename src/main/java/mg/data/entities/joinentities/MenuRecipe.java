@@ -1,7 +1,5 @@
 package mg.data.entities.joinentities;
 
-import java.util.Set;
-
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -1,9 +1,7 @@
 package mg.logic.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.dal.RecipeIngredientDataAccessLayerRepo;
 import mg.data.entities.joinentities.RecipeIngredient;
 import mg.data.entities.joinentities.RecipeIngredientId;
-import mg.data.entities.joinentities.helpers.RecipeIngreHelper;
 import mg.logic.RecipeIngredientService;
 import mg.logic.exceptions.IngredientNotFoundException;
 import mg.logic.exceptions.RecipeNotFoundException;

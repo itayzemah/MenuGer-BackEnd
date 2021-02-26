@@ -5,7 +5,6 @@ import java.util.List;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
 import mg.data.entities.IngredientEntity;
-import mg.data.entities.RecipeEntity;
 
 public interface RecipeService {
 
