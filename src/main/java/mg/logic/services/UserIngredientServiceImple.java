@@ -1,10 +1,13 @@
 package mg.logic.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -40,14 +43,18 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	public void update(String userEmail, long ingredientId, String type) {
 		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
 				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
+		
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
+		
 		UserIngredient userIngredient = new UserIngredient();
 		userIngredient.setIngredient(ingreEntity);
 		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
+		
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingreEntity.getId());
 		userIngredient.setId(key);
+		
 		this.userIngreDAL.save(userIngredient);
 	}
 
@@ -90,7 +97,9 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	}
 
 	@Override
-	public void bind(String userEmail, Long[] ingredients, String type) {
+	@Transactional
+	public void update(String userEmail, Long[] ingredients, String type) {
+		this.userIngreDAL.deleteByUser_EmailAndType(userEmail,type);
 		for (int i = 0; i < ingredients.length; i++) {
 			this.update(userEmail, ingredients[i], type);
 		}

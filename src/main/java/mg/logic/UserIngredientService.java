@@ -11,7 +11,7 @@ public interface UserIngredientService {
 
 	public Response<IngredientBoundary[]> getAllByType(String userEmail, String type, int size, int page);
 
-	public void bind(String userEmail, Long[] ingredients, String type);
+	public void update(String userEmail, Long[] ingredients, String type);
 
 	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);
 
