@@ -1,5 +1,6 @@
 package mg.logic.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +29,30 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 
 	@Transactional
 	@Override
-	public void update(long recipeId, long ingredientId, double ammount) {
+	public void update(long recipeId, long ingredientId) {
 		RecipeIngredient ri = new RecipeIngredient();
 		ri.setRecipe(recipeDAL.findById(recipeId)
 				.orElseThrow(() -> new RecipeNotFoundException("recipe with id " + recipeId + " not found")));
 		ri.setIngredient(ingreDAL.findById(ingredientId).orElseThrow(
 				() -> new IngredientNotFoundException("ingredient with id: " + ingredientId + " not found")));
-		ri.setAmmount(ammount);
 		ri.setId(new RecipeIngredientId(recipeId, ingredientId));
 		recipeIngreDAL.save(ri);
 	}
 
 	@Transactional
 	@Override
-	public void bind(long recipeId, List<RecipeIngreHelper> recipeIngreHelper) {
-		recipeIngreHelper.forEach(i -> this.update(recipeId, i.getIngredientId(), i.getAmmount()));
+	public void bind(long recipeId, List<Long> ingredients) {
+		ingredients.forEach(i -> this.update(recipeId, i));
 
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Map<String, Double> getAllForRecipe(long recipeId) {
-		Map<String, Double> rv = new HashMap<>();
+	public String[] getAllForRecipe(long recipeId) {
+		List<String> rv = new ArrayList<>();
 		this.recipeIngreDAL.findByRecipe_RecipeId(recipeId)
-				.forEach(ri -> rv.put(ri.getIngredient().getName(), ri.getAmmount()));
-		return rv;
+				.forEach(ri -> rv.add(ri.getIngredient().getName()));
+		return rv.toArray(new String[0]);
 	}
 
 	@Transactional

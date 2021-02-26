@@ -37,6 +37,5 @@ public class RecipeIngredient {
     @JoinColumn(name = "ingredient_id")
 	private IngredientEntity ingredient;
 
-	private double ammount;
 	
 }

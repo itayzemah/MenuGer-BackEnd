@@ -27,17 +27,17 @@ public class RecipeIngredientController {
 	@RequestMapping(path ="/update/{recipeId}/{ingredientId}", method=RequestMethod.PUT)
 	public void update(@PathVariable long recipeId, @PathVariable long ingredientId,
 			@RequestParam(required = true, defaultValue = "0.0") double ammount) {
-		recipeIngredientService.update(recipeId, ingredientId, ammount);
+		recipeIngredientService.update(recipeId, ingredientId);
 	}
 	
 	@RequestMapping(path = "/bind/{recipeId}", method = RequestMethod.PUT)
 	public void bind(@PathVariable long recipeId,
-			@RequestBody  List<RecipeIngreHelper> recipeIngreHelper) {
-		recipeIngredientService.bind(recipeId, recipeIngreHelper);
+			@RequestBody  List<Long> recipes) {
+		recipeIngredientService.bind(recipeId, recipes);
 	}
 	
 	@RequestMapping(path="/{recipeId}", method = RequestMethod.GET)
-	public Map<String, Double> getAll(@PathVariable long recipeId){
+	public String[] getAll(@PathVariable long recipeId){
 		return recipeIngredientService.getAllForRecipe(recipeId);
 	}
 	
