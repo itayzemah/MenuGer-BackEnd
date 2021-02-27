@@ -1,5 +1,6 @@
 package mg.data.entities.joinentities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,7 @@ public class UserIngredient {
 	@EmbeddedId
 	private UserIngredientKey id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@MapsId("userEmail")
 	@JoinColumn(name = "user_email")
 	private UserEntity user;

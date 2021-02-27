@@ -50,14 +50,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response<UserBoundary> unsubscribe(UserLoginBoundary user) {
 		Response<UserBoundary> rv = new Response<>();
-		Optional<UserEntity> opUser = this.userDAL.findById(user.getEmail());
+		Optional<UserEntity> opUser = this.userDAL.findByEmailAndIsActive(user.getEmail(), true);
 		if (!opUser.isPresent()) {
 			rv.setMessage("User with the id: " + user.getEmail() + " is not in registered");
 			rv.setSuccess(false);
 			return rv;
 		}
 		try {
-			this.userDAL.delete(opUser.get());
+			UserEntity userFromDb = opUser.get();
+			userFromDb.setIsActive(false);
+			this.userDAL.save(userFromDb);
 			rv.setMessage("User" + user.getEmail() + "Unsubscribed successfully");
 		} catch (IllegalArgumentException ex) {
 			rv.setMessage("Wrong User");
@@ -71,28 +73,27 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response<UserBoundary> login(UserLoginBoundary user) {
 		Response<UserBoundary> rv = new Response<>();
-		Optional<UserEntity> opUser = this.userDAL.findById(user.getEmail());
-		if (!opUser.isPresent()) {
-			throw new UserNotFoundException("User with the id: " + user.getEmail() + " is not in registered");
-		}
-		rv.setData(this.userConverter.toBoundary(opUser.get()));
+		UserEntity opUser = this.userDAL.findByEmailAndIsActive(user.getEmail(), true).orElseThrow(
+				() -> new UserNotFoundException("User with the id: " + user.getEmail() + " is not in registered"));
+		rv.setData(this.userConverter.toBoundary(opUser));
 		return rv;
 	}
 
 	@Transactional
 	@Override
 	public void updateUser(UserBoundary update) {
-		UserBoundary userFromDB = userConverter.toBoundary(
-				userDAL.findById(update.getEmail()).orElseThrow(() -> new UserNotFoundException(update.getEmail())));
-		userFromDB = this.mergeAndUpdate(userFromDB,update);
+		UserBoundary userFromDB = userConverter.toBoundary(userDAL.findByEmailAndIsActive(update.getEmail(), true)
+				.orElseThrow(() -> new UserNotFoundException(update.getEmail())));
+
+		userFromDB = this.mergeAndUpdate(userFromDB, update);
 		this.userDAL.save(userConverter.fromBoundary(userFromDB));
 	}
 
 	private UserBoundary mergeAndUpdate(UserBoundary base, UserBoundary update) {
-		if(update.getFullName()!= null && !update.getFullName().equalsIgnoreCase(base.getFullName())) {
+		if (update.getFullName() != null && !update.getFullName().equalsIgnoreCase(base.getFullName())) {
 			base.setFullName(update.getFullName());
 		}
-		if(update.getGender()!= null && !update.getGender().equalsIgnoreCase(base.getGender())) {
+		if (update.getGender() != null && !update.getGender().equalsIgnoreCase(base.getGender())) {
 			base.setGender(update.getGender());
 		}
 		return base;
@@ -102,8 +103,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response<UserBoundary[]> getAll() {
 		Response<UserBoundary[]> rv = new Response<>();
-		List<UserBoundary> lst = this.userDAL.findAll().stream().map(this.userConverter::toBoundary)
-				.collect(Collectors.toList());
+		List<UserBoundary> lst = this.userDAL.findAll().stream().filter(u -> u.getIsActive())
+				.map(this.userConverter::toBoundary).collect(Collectors.toList());
 		rv.setData(lst.toArray(new UserBoundary[0]));
 		return rv;
 	}
