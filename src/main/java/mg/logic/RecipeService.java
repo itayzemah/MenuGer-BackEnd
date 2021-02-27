@@ -8,14 +8,14 @@ import mg.data.entities.IngredientEntity;
 
 public interface RecipeService {
 
-	Response<RecipeBoundary> create(RecipeBoundary recipe);
+	public Response<RecipeBoundary> create(RecipeBoundary recipe);
 
-	Response<RecipeBoundary[]> getAll(int page, int size);
+	public Response<RecipeBoundary[]> getAll(int page, int size);
 
-	Response<RecipeBoundary[]> getByName(String name, int page, int size);
+	public Response<RecipeBoundary[]> getByName(String name, int page, int size);
 
-	List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr);
+	public List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr);
 
-	RecipeBoundary getById(Long rId);
+	public Response<RecipeBoundary> getById(Long rId);
 
 }

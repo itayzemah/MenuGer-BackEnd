@@ -88,7 +88,7 @@ public class MenuServiceImple implements MenuService {
 		List<MenuRecipe> menuRecipes = new ArrayList<>();
 		for (int i = 0; i < recipeId.length; i++) {
 			
-			recipes.add(this.recipeService.getById(recipeId[i]));
+			recipes.add(this.recipeService.getById(recipeId[i]).getData());
 			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getRecipeId()));
 		}
 		menu.setMenuRecipes(new HashSet<>(menuRecipes));

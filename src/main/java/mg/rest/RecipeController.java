@@ -44,4 +44,9 @@ public class RecipeController {
 			) {
 		return this.recipeService.getByName(name,page,size);
 	}
+	@RequestMapping(path="/by/id/{id}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary> getById(
+			@PathVariable("id") Long id) {
+		return this.recipeService.getById(id);
+	}
 }

@@ -70,11 +70,17 @@ public class RecipeServiceImple implements RecipeService {
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	@Override
-	public RecipeBoundary getById(Long rId) {
-		return this.recipeConverter.toBoundary(this.recipeDal.findById(rId)
+	public Response<RecipeBoundary> getById(Long rId) {
+		Response<RecipeBoundary> rv = new Response<RecipeBoundary>();
+		RecipeBoundary recipeArr = this.recipeConverter.toBoundary(this.recipeDal.findById(rId)
 				.orElseThrow(() -> new RecipeNotFoundException("Recipe with ID " + rId + " not found")));
 
+		recipeArr.setIngredients(recipeIngreService.getAllForRecipe(recipeArr.getRecipeId()));
+		
+		rv.setData(recipeArr);
+		return rv;
 	}
 
 }
