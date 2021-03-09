@@ -28,10 +28,13 @@ public class IngredientServiceImpl implements IngredientService {
 		if (ingredientBoundary.getName() == null || ingredientBoundary.getName().isEmpty()) {
 			rv.setSuccess(false);
 			rv.setMessage("Name of Ingredient can not be empty");
+		} else if (this.ingredientDAL.findAllByName(ingredientBoundary.getName()).size() > 0) {
+			rv.setSuccess(false);
+			rv.setMessage("Ingredient with this name is already exist: " + ingredientBoundary.getName());
 		} else {
 			rv.setData(this.converter
 					.toBoundary(this.ingredientDAL.save(this.converter.fromBoundary(ingredientBoundary))));
-			
+
 		}
 		return rv;
 	}
@@ -57,7 +60,7 @@ public class IngredientServiceImpl implements IngredientService {
 		} else if (ingredientBoundary.getName() == null || ingredientBoundary.getName().isEmpty()) {
 			rv.setSuccess(false);
 			rv.setMessage("Name of Ingredient can not be empty");
-		} else{
+		} else {
 			this.ingredientDAL.save(this.converter.fromBoundary(ingredientBoundary));
 		}
 		return rv;
@@ -93,13 +96,9 @@ public class IngredientServiceImpl implements IngredientService {
 
 	@Override
 	public Response<Void> removeAll() {
-		Response<Void> rv= new Response<Void>();
+		Response<Void> rv = new Response<Void>();
 		this.ingredientDAL.deleteAll();
 		return rv;
 	}
-
-	
-
-	
 
 }

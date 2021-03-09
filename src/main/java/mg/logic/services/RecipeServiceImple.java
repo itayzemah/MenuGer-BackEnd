@@ -14,7 +14,9 @@ import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
 import mg.data.converters.RecipeConverter;
 import mg.data.dal.RecipeDataAccessLayerRepo;
+import mg.data.dal.UserIngredientDataAccessRepo;
 import mg.data.entities.IngredientEntity;
+import mg.data.entities.IngredientTypeEnum;
 import mg.data.entities.RecipeEntity;
 import mg.logic.RecipeIngredientService;
 import mg.logic.RecipeService;
@@ -27,6 +29,7 @@ public class RecipeServiceImple implements RecipeService {
 	private RecipeDataAccessLayerRepo recipeDal;
 	private RecipeIngredientService recipeIngreService;
 	private RecipeConverter recipeConverter;
+	private UserIngredientDataAccessRepo userIngrdientsDAL;
 
 	@Override
 	@Transactional
@@ -64,12 +67,24 @@ public class RecipeServiceImple implements RecipeService {
 		return rv;
 	}
 
-	@Override
-	public List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr) {
-		return this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
-				.map(this.recipeConverter::toBoundary).collect(Collectors.toList());
-	}
 
+	@Override
+	public Response<RecipeBoundary[]> getRecipeWIthoutForbIngredients(String userEmail) {
+		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
+		try {		
+		// get All user FORBIDDEN ingredients
+				List<IngredientEntity> uiArr = userIngrdientsDAL
+						.findAllByUser_EmailAndType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), PageRequest.of(0, 1000))
+						.stream().map(ui -> ui.getIngredient()).collect(Collectors.toList());
+				rv.setData(this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
+						.map(this.recipeConverter::toBoundary).collect(Collectors.toList()).toArray(new RecipeBoundary[0]));
+		}catch (Exception e) {
+			rv.setMessage("Error in user details");
+			rv.setSuccess(false);
+		}	
+		return rv;
+}
+	
 	@Transactional(readOnly = true)
 	@Override
 	public Response<RecipeBoundary> getById(Long rId) {

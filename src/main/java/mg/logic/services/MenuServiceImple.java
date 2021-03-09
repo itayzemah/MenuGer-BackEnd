@@ -45,19 +45,14 @@ public class MenuServiceImple implements MenuService {
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
 
-		// get All user FORBIDDEN ingredients
-		List<IngredientEntity> uiArr = userIngrdientsDAL
-				.findAllByUser_EmailAndType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), PageRequest.of(0, 1000))
-				.stream().map(ui -> ui.getIngredient()).collect(Collectors.toList());
-
 		// get all appropriate recipes
-		List<RecipeBoundary> recipeEnityties = recipeService.getRecipeIWIthngredientNotIn(uiArr);
+		RecipeBoundary[] recipeEnityties = recipeService.getRecipeWIthoutForbIngredients(userEmail).getData();
 
 		for (int i = 0; i < days; i++) {
 //			RecipeBoundary recipe = recipeEnityties.remove(new Random().nextInt(recipeEnityties.size())); 
 			// for dev only
 			// TODO remove
-			RecipeBoundary recipe = recipeEnityties.get(new Random().nextInt(recipeEnityties.size()));
+			RecipeBoundary recipe = recipeEnityties[new Random().nextInt(recipeEnityties.length)];
 			menuRecipeService.create(menu.getId(), recipe.getRecipeId());
 		}
 		

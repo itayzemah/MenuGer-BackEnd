@@ -14,8 +14,8 @@ public interface RecipeService {
 
 	public Response<RecipeBoundary[]> getByName(String name, int page, int size);
 
-	public List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr);
-
 	public Response<RecipeBoundary> getById(Long rId);
+
+	public Response<RecipeBoundary[]> getRecipeWIthoutForbIngredients(String userEmail);
 
 }
