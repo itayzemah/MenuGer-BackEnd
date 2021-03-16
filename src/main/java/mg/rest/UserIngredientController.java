@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
 import mg.data.entities.IngredientTypeEnum;
+import mg.data.entities.joinentities.UserIngredient;
 import mg.logic.UserIngredientService;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -25,13 +26,12 @@ public class UserIngredientController {
 	private UserIngredientService userIngreService;
 
 	@RequestMapping(path = "/update/{userEmail}/{ingredientId}", method = RequestMethod.POST)
-	public void update(
-			@PathVariable("userEmail") String userEmail,
+	public void update(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@PathVariable("ingredientId") long ingredientId) {
-		userIngreService.update(userEmail, ingredientId, type.toString());
+		userIngreService.bind(userEmail, ingredientId, type.toString());
 	}
-	
+
 	// PUT /update/{userEmail}?type=???<IngredientTypeEnum>
 	@RequestMapping(path = "/update/{userEmail}", method = RequestMethod.PUT)
 	public void bind(@PathVariable("userEmail") String userEmail,
@@ -40,22 +40,23 @@ public class UserIngredientController {
 		userIngreService.update(userEmail, ingredients, type.toString());
 	}
 
-	
 	@RequestMapping(path = "by/type/{userEmail}", method = RequestMethod.GET)
-	public Response<IngredientBoundary[]> getAllIngreOfUserByType(
-			@PathVariable("userEmail") String userEmail,
+	public Response<IngredientBoundary[]> getAllIngreOfUserByType(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = false, defaultValue = "") IngredientTypeEnum type,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
-			) {
-		return userIngreService.getAllByType(userEmail,type==null?"": type.toString(), size, page);
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+		return userIngreService.getAllByType(userEmail, type == null ? "" : type.toString(), size, page);
 	}
+
 	@RequestMapping(path = "/{userEmail}", method = RequestMethod.GET)
-	public Response<Map<String, IngredientBoundary[]>> getAllIngreOfUser(
-			@PathVariable("userEmail") String userEmail,
+	public Response<Map<String, IngredientBoundary[]>> getAllIngreOfUser(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
-			) {
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
 		return userIngreService.getAll(userEmail, size, page);
+	}
+
+	@RequestMapping(path = "/{userEmail}/{ingredientId}", method = RequestMethod.DELETE)
+	public void getAllIngreOfUser(@PathVariable("userEmail") String userEmail, @RequestBody Long[] ingredientId) {
+		userIngreService.unbind(userEmail, ingredientId);
 	}
 }

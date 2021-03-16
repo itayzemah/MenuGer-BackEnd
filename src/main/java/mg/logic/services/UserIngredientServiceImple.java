@@ -39,7 +39,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	private IngredientConverter ingredientConverter;
 
 	@Override
-	public void update(String userEmail, long ingredientId, String type) {
+	public void bind(String userEmail, long ingredientId, String type) {
 		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
 				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
 		
@@ -100,7 +100,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	public void update(String userEmail, Long[] ingredients, String type) {
 		this.userIngreDAL.deleteByUser_EmailAndType(userEmail,type);
 		for (int i = 0; i < ingredients.length; i++) {
-			this.update(userEmail, ingredients[i], type);
+			this.bind(userEmail, ingredients[i], type);
 		}
 
 	}
@@ -110,6 +110,12 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		for (int i = 0; i < ingredients.length; i++) {
 			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail,ingredients[i]));
 		}
+	}
+
+	@Override
+	public Response<UserIngredient> remove(String userEmail, Long ingredientId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
