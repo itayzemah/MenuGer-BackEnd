@@ -43,7 +43,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
 				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
 		
-		UserEntity userEntity = this.userDAL.findById(userEmail)
+		UserEntity userEntity = this.userDAL.findByEmailAndIsActive(userEmail,true)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 		
 		UserIngredient userIngredient = new UserIngredient();

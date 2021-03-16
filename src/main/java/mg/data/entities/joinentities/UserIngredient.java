@@ -28,7 +28,7 @@ public class UserIngredient {
 	@EmbeddedId
 	private UserIngredientKey id;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("userEmail")
 	@JoinColumn(name = "user_email")
 	private UserEntity user;

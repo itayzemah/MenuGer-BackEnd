@@ -24,7 +24,7 @@ import mg.logic.UserIngredientService;
 public class UserIngredientController {
 	private UserIngredientService userIngreService;
 
-	@RequestMapping(path = "/update/{userEmail}/{ingredientId}", method = RequestMethod.PUT)
+	@RequestMapping(path = "/update/{userEmail}/{ingredientId}", method = RequestMethod.POST)
 	public void update(
 			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,

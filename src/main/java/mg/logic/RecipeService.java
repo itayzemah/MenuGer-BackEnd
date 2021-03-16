@@ -1,10 +1,8 @@
 package mg.logic;
 
-import java.util.List;
 
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
-import mg.data.entities.IngredientEntity;
 
 public interface RecipeService {
 

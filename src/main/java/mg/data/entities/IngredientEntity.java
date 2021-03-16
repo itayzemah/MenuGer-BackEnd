@@ -42,7 +42,6 @@ public class IngredientEntity {
     private String ingredientGroup;
     
     @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<UserIngredient> userIngredients;
     
     @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
