@@ -39,6 +39,9 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 	@Transactional
 	@Override
 	public void bind(long recipeId, List<Long> ingredients) {
+		if(!this.recipeDAL.existsById(recipeId)) {
+			throw new RecipeNotFoundException("recipe with id "+recipeId+" not found");
+		}
 		ingredients.forEach(i -> this.update(recipeId, i));
 
 	}

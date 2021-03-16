@@ -33,7 +33,6 @@ import mg.logic.RecipeService;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class MenuServiceImple implements MenuService {
 	private MenuDataAccessLayer menuDAL;
-	private UserIngredientDataAccessRepo userIngrdientsDAL;
 	private RecipeService recipeService;
 	private MenuRecipeService menuRecipeService;
 	private MenuConverter menuConverter;
@@ -52,7 +51,7 @@ public class MenuServiceImple implements MenuService {
 //			RecipeBoundary recipe = recipeEnityties.remove(new Random().nextInt(recipeEnityties.size())); 
 			// for dev only
 			// TODO remove
-			RecipeBoundary recipe = recipeEnityties[new Random().nextInt(recipeEnityties.length)];
+			RecipeBoundary recipe = recipeEnityties[new Random().nextInt(recipeEnityties.length-1)];
 			menuRecipeService.create(menu.getId(), recipe.getRecipeId());
 		}
 		
@@ -86,7 +85,7 @@ public class MenuServiceImple implements MenuService {
 			recipes.add(this.recipeService.getById(recipeId[i]).getData());
 			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getRecipeId()));
 		}
-		menu.setMenuRecipes(new HashSet<>(menuRecipes));
+//		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
 		
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);
