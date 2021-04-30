@@ -65,7 +65,7 @@ public class RecipeServiceImple implements RecipeService {
 	}
 
 	@Override
-	public List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr) {
+	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr) {
 		return this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList());
 	}

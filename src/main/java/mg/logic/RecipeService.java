@@ -14,7 +14,7 @@ public interface RecipeService {
 
 	Response<RecipeBoundary[]> getByName(String name, int page, int size);
 
-	List<RecipeBoundary> getRecipeIWIthngredientNotIn(List<IngredientEntity> uiArr);
+	List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr);
 
 	RecipeBoundary getById(Long rId);
 

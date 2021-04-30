@@ -15,7 +15,6 @@ public class UserConverter {
 		rv.setEmail(boundary.getEmail());
 		rv.setFullName(boundary.getFullName());
 		rv.setGender(boundary.getGender());
-		
 		return rv;
 	}
 	
@@ -24,7 +23,7 @@ public class UserConverter {
 		rv.setEmail(entity.getEmail());
 		rv.setFullName(entity.getFullName());
 		rv.setGender(entity.getGender());
-		
+
 		return rv;
 	}
 	

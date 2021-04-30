@@ -2,6 +2,7 @@ package mg.data.entities;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -29,8 +30,9 @@ public class UserEntity {
 	private @NonNull @Id String email;
 	private String fullName;
 	private String gender;
-	
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+
+	@OneToMany(mappedBy = "user",cascade =  {CascadeType.ALL}, fetch = FetchType.LAZY)
 	private Set<UserIngredient> userIngredients;
 	
+
 }

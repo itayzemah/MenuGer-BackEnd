@@ -24,12 +24,13 @@ import mg.logic.UserIngredientService;
 public class UserIngredientController {
 	private UserIngredientService userIngreService;
 
-	@RequestMapping(path = "/update/{userEmail}/{ingredientId}", method = RequestMethod.PUT)
+	@RequestMapping(path = "/update1/{userEmail}/{ingredientId}", method = RequestMethod.PUT)
 	public void update(
 			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
+			@RequestParam(name = "weight", required = false, defaultValue = "null") Double weight,
 			@PathVariable("ingredientId") long ingredientId) {
-		userIngreService.update(userEmail, ingredientId, type.toString());
+		userIngreService.update(userEmail, ingredientId, type.toString(),weight);
 	}
 	
 	// PUT /update/{userEmail}?type=???<IngredientTypeEnum>

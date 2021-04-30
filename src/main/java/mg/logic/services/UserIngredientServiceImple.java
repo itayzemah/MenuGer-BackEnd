@@ -1,7 +1,9 @@
 package mg.logic.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,22 +41,23 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	private IngredientConverter ingredientConverter;
 
 	@Override
-	public void update(String userEmail, long ingredientId, String type) {
+	public UserIngredient update(String userEmail, long ingredientId, String type, Double weight) {
 		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
 				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
-		
+
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
-		
+
 		UserIngredient userIngredient = new UserIngredient();
 		userIngredient.setIngredient(ingreEntity);
 		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
-		
+		userIngredient.setWeight(weight);
+
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingreEntity.getId());
 		userIngredient.setId(key);
-		
-		this.userIngreDAL.save(userIngredient);
+
+		return this.userIngreDAL.save(userIngredient);
 	}
 
 	@Override
@@ -70,6 +73,20 @@ public class UserIngredientServiceImple implements UserIngredientService {
 				PageRequest.of(page, size));
 		rv.setData(lst.stream().map((ui) -> ui.getIngredient()).map(this.ingredientConverter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
+		return rv;
+	}
+	@Override
+	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page) {
+		Response<List<UserIngredient>> rv = new Response<List<UserIngredient>>();
+		if (type.isEmpty() || type == null) {
+			rv.setSuccess(false);
+			rv.setMessage("type can not be empty or null");
+			return rv;
+		}
+		
+		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
+				PageRequest.of(page, size));
+		rv.setData(lst);
 		return rv;
 	}
 
@@ -98,17 +115,30 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	@Override
 	@Transactional
 	public void update(String userEmail, Long[] ingredients, String type) {
-		this.userIngreDAL.deleteByUser_EmailAndType(userEmail,type);
-		for (int i = 0; i < ingredients.length; i++) {
-			this.update(userEmail, ingredients[i], type);
-		}
+		ArrayList<Long> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
+		List<UserIngredient> removedUI = this.userIngreDAL.deleteByUser_EmailAndType(userEmail, type);
 
+		if (type == IngredientTypeEnum.PREFERRED.name()) {
+			for (UserIngredient userIngredient : removedUI) {
+				int idx = ingredientsLst.indexOf(userIngredient.getId().getIngredientid());
+				if (idx != -1) {
+					this.update(userEmail, ingredientsLst.get(idx), IngredientTypeEnum.PREFERRED.name(),
+							userIngredient.getWeight());
+					ingredientsLst.remove(idx);
+				}
+			}
+
+		}
+		for (int i = 0; i < ingredientsLst.size(); i++) {
+
+			this.update(userEmail, ingredientsLst.get(i), type, type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null);
+		}
 	}
-	
+
 	@Override
 	public void unbind(String userEmail, Long[] ingredients) {
 		for (int i = 0; i < ingredients.length; i++) {
-			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail,ingredients[i]));
+			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail, ingredients[i]));
 		}
 	}
 

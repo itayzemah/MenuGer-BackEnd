@@ -1,13 +1,15 @@
 package mg.logic;
 
+import java.util.List;
 import java.util.Map;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
+import mg.data.entities.joinentities.UserIngredient;
 
 public interface UserIngredientService {
 
-	public void update(String userEmail, long ingredientId,String type);
+	public UserIngredient update(String userEmail, long ingredientId,String type,Double weight);
 
 	public Response<IngredientBoundary[]> getAllByType(String userEmail, String type, int size, int page);
 
@@ -15,6 +17,8 @@ public interface UserIngredientService {
 
 	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);
 
-	void unbind(String userEmail, Long[] ingredients);	
+	public void unbind(String userEmail, Long[] ingredients);
+
+	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page);	
 	
 }

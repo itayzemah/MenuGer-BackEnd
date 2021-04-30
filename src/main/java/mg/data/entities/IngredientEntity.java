@@ -2,6 +2,7 @@ package mg.data.entities;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +39,7 @@ public class IngredientEntity {
 
     private String ingredientGroup;
     
-    @OneToMany(mappedBy = "ingredient",fetch = FetchType.LAZY)
+    @OneToMany( mappedBy = "ingredient",fetch = FetchType.LAZY)
     private Set<UserIngredient> userIngredients;
     
     @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)

@@ -1,5 +1,7 @@
 package mg.boundaries;
 
+import java.util.Map;
+
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -19,7 +21,5 @@ public class UserBoundary {
 	private @NonNull @Id String email;
 	private String fullName;
 	private String gender;
-//	private Set<IngredientBoundary> forbiddenIngredients = new HashSet<>();
-//	private Set<IngredientBoundary> favoriteIngredients = new HashSet<>();
-
+	private Map<Long,Double> userWeights;
 }

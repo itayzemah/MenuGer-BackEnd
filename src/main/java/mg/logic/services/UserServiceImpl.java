@@ -1,5 +1,6 @@
 package mg.logic.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -41,8 +42,10 @@ public class UserServiceImpl implements UserService {
 			throw new UserAlreadyExistException(user.getEmail());
 		}
 		emailValidationCheck(user.getEmail());
+		UserEntity entity = this.userConverter.fromBoundary(user);
+	
 		Response<UserBoundary> rv = new Response<>();
-		rv.setData(this.userConverter.toBoundary(this.userDAL.save(this.userConverter.fromBoundary(user))));
+		rv.setData(this.userConverter.toBoundary(this.userDAL.save(entity)));
 		return rv;
 	}
 
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService {
 			return rv;
 		}
 		try {
-			this.userDAL.delete(opUser.get());
+			this.userDAL.deleteById(user.getEmail());
 			rv.setMessage("User" + user.getEmail() + "Unsubscribed successfully");
 		} catch (IllegalArgumentException ex) {
 			rv.setMessage("Wrong User");
