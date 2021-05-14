@@ -31,29 +31,19 @@ public class RecipeController {
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getAll(
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
-		) {
-		return this.recipeService.getAll(page,size);
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+		return this.recipeService.getAll(page, size);
 	}
 
-	@RequestMapping(path="/not-forb/{userEmail}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<RecipeBoundary[]> getAllNotForb(@PathVariable("userEmail") String userEmail
-			) {
-		return this.recipeService.getRecipeWIthoutForbIngredients(userEmail);
-	}
-	
-	@RequestMapping(path="/by/name/{name}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<RecipeBoundary[]> getByName(
-			@PathVariable("name") String name,
+	@RequestMapping(path = "/by/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary[]> getByName(@PathVariable("name") String name,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
-			) {
-		return this.recipeService.getByName(name,page,size);
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+		return this.recipeService.getByName(name, page, size);
 	}
-	
-	@RequestMapping(path="/by/id/{id}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<RecipeBoundary> getById(
-			@PathVariable("id") Long id) {
+
+	@RequestMapping(path = "/by/id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RecipeBoundary getById(@PathVariable("id") Long id) {
 		return this.recipeService.getById(id);
 	}
 }
