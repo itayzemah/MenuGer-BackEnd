@@ -15,18 +15,22 @@ import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.entities.joinentities.MenuRecipe;
 import mg.data.entities.joinentities.MenuRecipeId;
 import mg.logic.MenuRecipeService;
+import mg.logic.RecipeService;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class MenuRecipeServiceImple implements MenuRecipeService{
-	private RecipeConverter recipeConverter;
+	private RecipeService recipeService;
 	private MenuRecipeDataAccessRepo menuRecipeDAL;
 	private MenuDataAccessLayer menuDAL;
 	private RecipeDataAccessLayerRepo recipeDAL;
 	
 	@Override
 	public List<RecipeBoundary> getAllForMenu(long menuId) {
-		return menuRecipeDAL.findAllByMenu_Id(menuId).stream().map(mr -> mr.getRecipe()).map(this.recipeConverter::toBoundary).collect(Collectors.toList());	
+		return menuRecipeDAL.findAllByMenu_Id(menuId)
+				.stream()
+				.map(mr -> this.recipeService.getById(mr.getRecipe().getRecipeId()))
+				.collect(Collectors.toList());	
 	}
 
 	@Override

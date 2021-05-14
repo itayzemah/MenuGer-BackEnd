@@ -37,7 +37,7 @@ public class RecipeEntity {
 	private @NonNull String name;
 	private String prepartion;
 	private String createdBy;
-
+	private String imageLink;
 	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
 	private Set<RecipeIngredient> recipeIngredients;
 	

@@ -66,7 +66,7 @@ public class IngredientsController {
 		return ingredientService.update(ingredientBoundary);
 	}
 	
-	@RequestMapping
+	/*@RequestMapping
 	(path = "{ingredientId}", method = RequestMethod.DELETE,
 	consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Response<Void> remove(@PathVariable Long ingredientId){
@@ -79,7 +79,7 @@ public class IngredientsController {
 	public Response<Void> removeAll(){
 		return ingredientService.removeAll();
 	}
-	
+	*/
 	@ExceptionHandler
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
 	public Response<String> handleException(SQLServerException e) {

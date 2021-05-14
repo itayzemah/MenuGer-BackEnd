@@ -114,7 +114,7 @@ public class MenuServiceImple implements MenuService {
 			recipes.add(this.recipeService.getById(recipeId[i]));
 			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getRecipeId()));
 		}
-		menu.setMenuRecipes(new HashSet<>(menuRecipes));
+//		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
 
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);

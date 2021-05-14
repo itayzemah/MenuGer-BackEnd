@@ -35,6 +35,12 @@ public class RecipeController {
 		) {
 		return this.recipeService.getAll(page,size);
 	}
+
+	@RequestMapping(path="/not-forb/{userEmail}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary[]> getAllNotForb(@PathVariable("userEmail") String userEmail
+			) {
+		return this.recipeService.getRecipeWIthoutForbIngredients(userEmail);
+	}
 	
 	@RequestMapping(path="/by/name/{name}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getByName(
@@ -43,5 +49,11 @@ public class RecipeController {
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
 			) {
 		return this.recipeService.getByName(name,page,size);
+	}
+	
+	@RequestMapping(path="/by/id/{id}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<RecipeBoundary> getById(
+			@PathVariable("id") Long id) {
+		return this.recipeService.getById(id);
 	}
 }
