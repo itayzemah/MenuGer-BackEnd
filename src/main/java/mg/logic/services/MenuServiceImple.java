@@ -156,10 +156,6 @@ public class MenuServiceImple implements MenuService {
 		}
 	}
 
-	private void addScore(Long id) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public MenuBoundary[] getAllForUser(String userEmail, int page, int size) {
