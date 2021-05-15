@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import mg.boundaries.MenuBoundary;
 import mg.boundaries.helper.MenuBuilderBoundary;
+import mg.boundaries.helper.MenuFeedbackEnum;
 import mg.boundaries.helper.MenuSearchBoundary;
 import mg.logic.MenuService;
 
@@ -36,14 +37,22 @@ public class MenuController {
 		return menuService.getAll(userEmail, page, size);
 	}
 
-	@RequestMapping(path = "/build", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public MenuBoundary buildMenu(@RequestBody MenuBuilderBoundary menubuilderBoundary) {
 		return menuService.buildMenu(menubuilderBoundary.getUserEmail(), menubuilderBoundary.getRecipeId());
 	}
 
-	@RequestMapping(path = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public MenuBoundary[] searchBetweenDatesCreated(@RequestBody MenuSearchBoundary menuSearchBoundary) {
 		return menuService.searchMenu(menuSearchBoundary.getFromDate(), menuSearchBoundary.getToDate());
+	}
+
+	@RequestMapping(path = "/feedback", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void feedbackMenuResults(
+			@RequestParam(name = "feedback", required = true, defaultValue = "GOOD") MenuFeedbackEnum feedback,
+			@RequestParam(name = "menuId", required = true, defaultValue = "-1") long menuId,
+			@RequestParam(name = "recipeId", required = true, defaultValue = "-1") long recipeId) {
+		menuService.feedbackMenu(menuId, recipeId, feedback);
 	}
 
 }

@@ -34,6 +34,7 @@ public class MenuEntity {
 	
 	private Date timestamp;
 	private short numOfErrors;
+	private String user;
 	
 	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
 	private Set<MenuRecipe> menuRecipes;

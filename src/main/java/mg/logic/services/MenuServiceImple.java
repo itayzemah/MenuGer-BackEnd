@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.MenuBoundary;
 import mg.boundaries.RecipeBoundary;
+import mg.boundaries.helper.MenuFeedbackEnum;
 import mg.boundaries.helper.RecipeWithRate;
 import mg.boundaries.helper.RecipeWithRateComparator;
 import mg.data.converters.IngredientConverter;
@@ -34,6 +35,7 @@ import mg.logic.MenuRecipeService;
 import mg.logic.MenuService;
 import mg.logic.RecipeService;
 import mg.logic.UserIngredientService;
+import mg.logic.exceptions.MenuNotFoundExcetion;
 
 @Service
 @NoArgsConstructor
@@ -52,6 +54,7 @@ public class MenuServiceImple implements MenuService {
 		// create menu in DB
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
+		menu.setUser(userEmail);
 		menu = menuDAL.save(menu);
 		IngredientBoundary[] allUI = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
@@ -69,7 +72,7 @@ public class MenuServiceImple implements MenuService {
 				recipeService.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients));
 
 		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
-		
+
 		for (int i = 0; i < days; i++) {
 //			RecipeBoundary recipe = recipeEnityties.remove(new Random().nextInt(recipeEnityties.size())); 
 			// for dev only
@@ -97,7 +100,7 @@ public class MenuServiceImple implements MenuService {
 	}
 
 	@Override
-	public MenuBoundary[] getAll(String userEmail, int page, int size) {
+	public MenuBoundary[] getAll(int page, int size) {
 		List<MenuBoundary> lst = this.menuDAL.findAll(PageRequest.of(page, size)).stream()
 				.map(this.menuConverter::toBoundary).collect(Collectors.toList());
 		return linkRecipesAndConvertToArr(lst);
@@ -106,6 +109,7 @@ public class MenuServiceImple implements MenuService {
 	@Override
 	public MenuBoundary buildMenu(String userEmail, Long[] recipeId) {
 		MenuEntity menu = new MenuEntity();
+		menu.setUser(userEmail);
 		menu.setTimestamp(new Date());
 		menu = this.menuDAL.save(menu);
 		List<RecipeBoundary> recipes = new ArrayList<>();
@@ -133,5 +137,32 @@ public class MenuServiceImple implements MenuService {
 	private MenuBoundary[] linkRecipesAndConvertToArr(List<MenuBoundary> lst) {
 		lst.forEach(m -> m.setRecipes(this.menuRecipeService.getAllForMenu(m.getId())));
 		return lst.toArray(new MenuBoundary[0]);
+	}
+
+	@Override
+	public void feedbackMenu(long menuId, long recipeId, MenuFeedbackEnum feedback) {
+		MenuRecipe menuRecipe = this.menuRecipeService.findOne(menuId, recipeId);
+
+		MenuEntity menu = this.menuDAL.findById(menuId)
+				.orElseThrow(() -> new MenuNotFoundExcetion("Menu with ID: " + menuId + " not found"));
+		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
+			menuRecipe.getRecipe().getRecipeIngredients().stream()
+			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUser(), ingredient.getIngredient().getId()));
+	
+		} else {
+			menu.setNumOfErrors((short) (menu.getNumOfErrors() + 1));
+			menuRecipe.getRecipe().getRecipeIngredients().stream()
+					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUser(), ingredient.getIngredient().getId()));
+		}
+	}
+
+	private void addScore(Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public MenuBoundary[] getAllForUser(String userEmail, int page, int size) {
+		return this.menuDAL.findAllByUserEmail(userEmail, PageRequest.of(page, size));
 	}
 }

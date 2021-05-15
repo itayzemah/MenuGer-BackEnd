@@ -15,6 +15,7 @@ import mg.data.entities.joinentities.MenuRecipe;
 import mg.data.entities.joinentities.MenuRecipeId;
 import mg.logic.MenuRecipeService;
 import mg.logic.RecipeService;
+import mg.logic.exceptions.MenuRecipeNotFound;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -40,6 +41,12 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 				this.recipeDAL.findById(recipeId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
 		mr.setId(new MenuRecipeId(recipeId, menuId));
 		return menuRecipeDAL.save(mr);
+	}
+
+	@Override
+	public MenuRecipe findOne(long menuId, long recipeId) {
+		return this.menuRecipeDAL.findById(new MenuRecipeId(recipeId, menuId))
+				.orElseThrow(() -> new MenuRecipeNotFound("menu " + menuId + " or recipe " + recipeId + "not found"));
 	}
 
 }

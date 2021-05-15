@@ -75,15 +75,17 @@ public class UserIngredientServiceImple implements UserIngredientService {
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
 		return rv;
 	}
+
 	@Override
-	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page) {
+	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size,
+			int page) {
 		Response<List<UserIngredient>> rv = new Response<List<UserIngredient>>();
 		if (type.isEmpty() || type == null) {
 			rv.setSuccess(false);
 			rv.setMessage("type can not be empty or null");
 			return rv;
 		}
-		
+
 		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
 				PageRequest.of(page, size));
 		rv.setData(lst);
@@ -131,7 +133,8 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		}
 		for (int i = 0; i < ingredientsLst.size(); i++) {
 
-			this.update(userEmail, ingredientsLst.get(i), type, type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null);
+			this.update(userEmail, ingredientsLst.get(i), type,
+					type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null);
 		}
 	}
 
@@ -140,6 +143,30 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		for (int i = 0; i < ingredients.length; i++) {
 			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail, ingredients[i]));
 		}
+	}
+
+	@Override
+	public UserIngredient getOne(String user, long ingredientsId) {
+		return this.userIngreDAL.findById(new UserIngredientKey(user, ingredientsId))
+				.orElseThrow(() -> new RuntimeException("Not Found"));
+
+	}
+
+	@Override
+	public double goodScore(String userEmail, long ingredientId) {
+		return changeRate(userEmail, ingredientId, -0.5);
+	}
+
+	@Override
+	public double badScore(String userEmail, long ingredientId) {
+		return changeRate(userEmail, ingredientId, 0.5);
+
+	}
+
+	private double changeRate(String userEmail, long ingredientId, double delta) {
+		UserIngredient userIngredient = this.getOne(userEmail, ingredientId);
+		userIngredient.setRate(userIngredient.getRate() + delta);
+		return userIngredient.getRate();
 	}
 
 }

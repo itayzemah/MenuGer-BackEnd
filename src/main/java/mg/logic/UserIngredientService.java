@@ -19,6 +19,11 @@ public interface UserIngredientService {
 
 	public void unbind(String userEmail, Long[] ingredients);
 
-	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page);	
+	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page);
+
+	public UserIngredient getOne(String user, long recipeId);	
 	
+	public double goodScore(String userEmail, long recipeId);
+	
+	public double badScore(String userEmail, long recipeId);
 }
