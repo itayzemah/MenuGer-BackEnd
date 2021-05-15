@@ -30,7 +30,8 @@ public class UserEntity {
 	private @NonNull @Id String email;
 	private String fullName;
 	private String gender;
-
+	private boolean isActive;
+	
 	@OneToMany(mappedBy = "user",cascade =  {CascadeType.ALL}, fetch = FetchType.LAZY)
 	private Set<UserIngredient> userIngredients;
 	

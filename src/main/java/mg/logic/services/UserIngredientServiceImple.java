@@ -41,7 +41,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	private IngredientConverter ingredientConverter;
 
 	@Override
-	public UserIngredient update(String userEmail, long ingredientId, String type, Double weight) {
+	public UserIngredient update(String userEmail, long ingredientId, String type, Double rate) {
 		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientId)
 				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientId + " not found"));
 
@@ -52,7 +52,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		userIngredient.setIngredient(ingreEntity);
 		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
-		userIngredient.setWeight(weight);
+		userIngredient.setRate(rate);
 
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingreEntity.getId());
 		userIngredient.setId(key);
@@ -123,7 +123,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 				int idx = ingredientsLst.indexOf(userIngredient.getId().getIngredientid());
 				if (idx != -1) {
 					this.update(userEmail, ingredientsLst.get(idx), IngredientTypeEnum.PREFERRED.name(),
-							userIngredient.getWeight());
+							userIngredient.getRate());
 					ingredientsLst.remove(idx);
 				}
 			}

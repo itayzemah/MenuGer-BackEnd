@@ -1,6 +1,5 @@
 package mg.data.entities.joinentities;
 
-import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,5 +39,5 @@ public class UserIngredient {
 
 	private String type;
 	
-	private Double weight;
+	private Double rate;
 }

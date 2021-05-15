@@ -2,12 +2,11 @@ package mg.logic.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -22,10 +21,10 @@ import mg.boundaries.IngredientBoundary;
 import mg.boundaries.MenuBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.helper.RecipeWithRate;
+import mg.boundaries.helper.RecipeWithRateComparator;
 import mg.data.converters.IngredientConverter;
 import mg.data.converters.MenuConverter;
 import mg.data.dal.MenuDataAccessLayer;
-import mg.data.dal.UserIngredientDataAccessRepo;
 import mg.data.entities.IngredientEntity;
 import mg.data.entities.IngredientTypeEnum;
 import mg.data.entities.MenuEntity;
@@ -53,6 +52,7 @@ public class MenuServiceImple implements MenuService {
 		// create menu in DB
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
+		menu = menuDAL.save(menu);
 		IngredientBoundary[] allUI = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
@@ -68,6 +68,8 @@ public class MenuServiceImple implements MenuService {
 		List<RecipeWithRate> recipesWithRate = getListOfRatedRecipes(preferredUserIngredients,
 				recipeService.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients));
 
+		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
+		
 		for (int i = 0; i < days; i++) {
 //			RecipeBoundary recipe = recipeEnityties.remove(new Random().nextInt(recipeEnityties.size())); 
 			// for dev only
@@ -86,13 +88,12 @@ public class MenuServiceImple implements MenuService {
 	private List<RecipeWithRate> getListOfRatedRecipes(List<UserIngredient> preferredUserIngredients,
 			List<RecipeBoundary> allAllowRecipes) {
 		ArrayList<RecipeWithRate> rv = new ArrayList<RecipeWithRate>();
-		allAllowRecipes.forEach(recipe -> calcRate(recipe,preferredUserIngredients));
-		return null;
+		allAllowRecipes.forEach(recipe -> rv.add(calcRate(recipe, preferredUserIngredients)));
+		return rv;
 	}
 
 	private RecipeWithRate calcRate(RecipeBoundary recipe, List<UserIngredient> preferredUserIngredients) {
-		RecipeWithRate rv = new RecipeWithRate(recipe, 0.0);
-		return null;
+		return new RecipeWithRate(recipe, preferredUserIngredients);
 	}
 
 	@Override

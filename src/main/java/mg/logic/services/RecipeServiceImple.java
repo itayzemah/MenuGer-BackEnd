@@ -44,9 +44,7 @@ public class RecipeServiceImple implements RecipeService {
 		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
 		RecipeBoundary[] recipeArr = recipeDal.findAll(PageRequest.of(page, size)).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
-		for (int i = 0; i < recipeArr.length; i++) {
-			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
-		}
+		setIngredients(recipeArr);
 		rv.setData(recipeArr);
 		return rv;
 	}
@@ -57,17 +55,23 @@ public class RecipeServiceImple implements RecipeService {
 		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
 		RecipeBoundary[] recipeArr = this.recipeDal.findAllByName(name, PageRequest.of(page, size)).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
-		for (int i = 0; i < recipeArr.length; i++) {
-			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
-		}
+		setIngredients(recipeArr);
 		rv.setData(recipeArr);
 		return rv;
 	}
 
+	private void setIngredients(RecipeBoundary[] recipeArr) {
+		for (int i = 0; i < recipeArr.length; i++) {
+			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
+		}
+	}
+
 	@Override
 	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr) {
-		return this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
+		List<RecipeBoundary> rv =  this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList());
+				rv.forEach(r-> r.setIngredients(this.recipeIngreService.getAllForRecipe(r.getRecipeId())));
+				return rv;
 	}
 
 	@Override
