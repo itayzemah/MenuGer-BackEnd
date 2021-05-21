@@ -34,7 +34,7 @@ public class MenuController {
 	public MenuBoundary[] getAll(@PathVariable String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-		return menuService.getAll(userEmail, page, size);
+		return menuService.getAllForUser(userEmail, page, size);
 	}
 
 	@RequestMapping(path = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
