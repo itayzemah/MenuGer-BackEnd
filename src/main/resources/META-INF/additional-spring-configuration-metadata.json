@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "spoonacular.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spoonacular.url'"
+  },
+  {
+    "name": "spoonacular.ingredient.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spoonacular.ingredient.url'"
+  },
+  {
+    "name": "spoonacular.base.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spoonacular.base.url'"
+  },
+  {
+    "name": "spoonacular.recipes.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spoonacular.recipes.url'"
+  }
+]}
