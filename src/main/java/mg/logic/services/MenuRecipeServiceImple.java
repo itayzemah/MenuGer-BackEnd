@@ -27,10 +27,10 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 	
 	@Override
 	public List<RecipeBoundary> getAllForMenu(long menuId) {
-		return menuRecipeDAL.findAllByMenu_Id(menuId)
+		return menuRecipeDAL.findAllByMenu_id(menuId)
 				.stream()
 				.map(mr -> this.recipeService.getById(mr.getRecipe().getRecipeId()))
-				.collect(Collectors.toList());	
+				.collect(Collectors.toList());
 	}
 
 	@Override

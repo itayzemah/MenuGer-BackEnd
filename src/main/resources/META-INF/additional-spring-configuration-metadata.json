@@ -18,5 +18,15 @@
     "name": "spoonacular.recipes.url",
     "type": "java.lang.String",
     "description": "A description for 'spoonacular.recipes.url'"
+  },
+  {
+    "name": "x-rapidapi-key",
+    "type": "java.lang.String",
+    "description": "A description for 'x-rapidapi-key'"
+  },
+  {
+    "name": "x-rapidapi-key",
+    "type": "java.lang.String",
+    "description": "A description for 'x-rapidapi-key'"
   }
 ]}

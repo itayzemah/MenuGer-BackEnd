@@ -14,7 +14,7 @@ import mg.data.converters.IngredientConverter;
 import mg.data.dal.IngredientDataAccessRepo;
 import mg.logic.IngredientService;
 
-@Service
+//@Service
 @NoArgsConstructor
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class IngredientServiceImpl implements IngredientService {

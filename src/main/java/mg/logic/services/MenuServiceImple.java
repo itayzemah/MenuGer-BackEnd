@@ -54,7 +54,7 @@ public class MenuServiceImple implements MenuService {
 		// create menu in DB
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
-		menu.setUser(userEmail);
+		menu.setUserEmail(userEmail);
 		menu = menuDAL.save(menu);
 		IngredientBoundary[] allUI = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
@@ -109,7 +109,7 @@ public class MenuServiceImple implements MenuService {
 	@Override
 	public MenuBoundary buildMenu(String userEmail, Long[] recipeId) {
 		MenuEntity menu = new MenuEntity();
-		menu.setUser(userEmail);
+		menu.setUserEmail(userEmail);
 		menu.setTimestamp(new Date());
 		menu = this.menuDAL.save(menu);
 		List<RecipeBoundary> recipes = new ArrayList<>();
@@ -147,18 +147,20 @@ public class MenuServiceImple implements MenuService {
 				.orElseThrow(() -> new MenuNotFoundExcetion("Menu with ID: " + menuId + " not found"));
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
 			menuRecipe.getRecipe().getRecipeIngredients().stream()
-			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUser(), ingredient.getIngredient().getId()));
+			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUserEmail(), ingredient.getIngredient().getId()));
 	
 		} else {
 			menu.setNumOfErrors((short) (menu.getNumOfErrors() + 1));
 			menuRecipe.getRecipe().getRecipeIngredients().stream()
-					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUser(), ingredient.getIngredient().getId()));
+					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUserEmail(), ingredient.getIngredient().getId()));
 		}
 	}
 
 
 	@Override
 	public MenuBoundary[] getAllForUser(String userEmail, int page, int size) {
-		return this.menuDAL.findAllByUserEmail(userEmail, PageRequest.of(page, size));
+		List<MenuBoundary> entities = this.menuDAL.findAllByUserEmail(userEmail, PageRequest.of(page, size)).stream()
+				.map(this.menuConverter::toBoundary).collect(Collectors.toList());
+		 return linkRecipesAndConvertToArr(entities);
 	}
 }

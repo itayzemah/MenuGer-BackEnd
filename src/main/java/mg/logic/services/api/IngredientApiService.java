@@ -4,13 +4,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
 import mg.boundaries.helper.SpoonacularSearchResult;
 import mg.logic.IngredientService;
 
+@Service
 public class IngredientApiService implements IngredientService {
 
 	private RestTemplate client;
@@ -18,6 +24,10 @@ public class IngredientApiService implements IngredientService {
 	private String baseUrl;
 	@Value("${spoonacular.ingredient.url}")
 	private String ingredientUrl;
+	@Value("${x-rapidapi-key}")
+	private String rapidapiKey;
+	@Value("${x-rapidapi-host}")
+	private String rapidapiHost;
 
 	public IngredientApiService() {
 		client = new RestTemplate();
@@ -31,10 +41,24 @@ public class IngredientApiService implements IngredientService {
 	@Override
 	public Response<IngredientBoundary[]> findByName(String name) {
 		Response<IngredientBoundary[]> retval = new Response<IngredientBoundary[]>();
-		String search = "/search?query=" + name;
+		String search = "/autocomplete?query=" + name;
 		// SpoonacularSearchResult<IngredientBoundary> result =
 		// client.getForObject(baseUrl + ingredientUrl+search,
 		// SpoonacularSearchResult.class);
+		
+		try {
+			HttpResponse<String> response1 = Unirest.get(baseUrl + ingredientUrl + search)
+					.header("x-rapidapi-key", "65bc01e644msh253ff15fa2688c0p1fe83djsn741ff5c1ded8")
+					.header("x-rapidapi-host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
+					.asString();
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
 		ResponseEntity<SpoonacularSearchResult<IngredientBoundary>> response = client.exchange(
 				baseUrl + ingredientUrl + search, HttpMethod.GET, null,
 				new ParameterizedTypeReference<SpoonacularSearchResult<IngredientBoundary>>() {

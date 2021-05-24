@@ -9,5 +9,5 @@ import mg.data.entities.joinentities.MenuRecipeId;
 
 public interface MenuRecipeDataAccessRepo extends JpaRepository<MenuRecipe, MenuRecipeId> {
 	
-	public List<MenuRecipe> findAllByMenu_Id(Long menuId);
+	public List<MenuRecipe> findAllByMenu_id(Long menuId);
 }
