@@ -101,4 +101,10 @@ public class IngredientServiceImpl implements IngredientService {
 		return rv;
 	}
 
+	@Override
+	public Response<IngredientBoundary> findById(Long ingredientId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

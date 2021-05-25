@@ -27,6 +27,7 @@ import mg.data.entities.IngredientTypeEnum;
 import mg.data.entities.UserEntity;
 import mg.data.entities.joinentities.UserIngredient;
 import mg.data.entities.joinentities.UserIngredientKey;
+import mg.logic.IngredientService;
 import mg.logic.UserIngredientService;
 import mg.logic.exceptions.IngredientNotFoundException;
 import mg.logic.exceptions.UserNotFoundException;
@@ -36,25 +37,27 @@ import mg.logic.exceptions.UserNotFoundException;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class UserIngredientServiceImple implements UserIngredientService {
 	private UserDataAccessRepo userDAL;
-	private IngredientDataAccessRepo ingreDAL;
+//	private IngredientDataAccessRepo ingreDAL;
+	private	IngredientService ingredientService;
 	private UserIngredientDataAccessRepo userIngreDAL;
-	private IngredientConverter ingredientConverter;
 
 	@Override
-	public UserIngredient update(String userEmail, String ingredientName, String type, Double rate) {
-		IngredientEntity ingreEntity = this.ingreDAL.findById(ingredientName)
-				.orElseThrow(() -> new IngredientNotFoundException("Ingredient " + ingredientName + " not found"));
+	public UserIngredient update(String userEmail, Long ingredientId, String type, Double rate) {
+		Response<IngredientBoundary> ingredientRes = this.ingredientService.findById(ingredientId);
+		if(!ingredientRes.getSuccess()) {
+			throw  new IngredientNotFoundException("Ingredient " + ingredientId + " not found");
+		}
 
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 
 		UserIngredient userIngredient = new UserIngredient();
-		userIngredient.setIngredient(ingreEntity);
+		userIngredient.setIngredientId(ingredientRes.getData().getId());
 		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
 		userIngredient.setRate(rate);
 
-		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingreEntity.getName());
+		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingredientRes.getData().getId());
 		userIngredient.setId(key);
 
 		return this.userIngreDAL.save(userIngredient);
@@ -71,7 +74,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
 				PageRequest.of(page, size));
-		rv.setData(lst.stream().map((ui) -> ui.getIngredient()).map(this.ingredientConverter::toBoundary)
+		rv.setData(lst.stream().map((ui) -> ui.getIngredientId())//.map(this.ingredientConverter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
 		return rv;
 	}
@@ -96,6 +99,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	public Response<Map<String, IngredientBoundary[]>> getAll(String userEmail, int size, int page) {
 		Response<Map<String, IngredientBoundary[]>> rv = new Response<Map<String, IngredientBoundary[]>>();
 		Map<String, IngredientBoundary[]> map = new HashMap<String, IngredientBoundary[]>();
+		
 		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_Email(userEmail, PageRequest.of(page, size));
 
 		List<IngredientBoundary> lstF = new ArrayList<>();
@@ -103,9 +107,11 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		lst.forEach(i -> {
 			if (i.getType().equals(IngredientTypeEnum.PREFERRED.name())) {
-				lstP.add(this.ingredientConverter.toBoundary(i.getIngredient()));
+				lstP.add(this.ingredientService.findById(i.getId().getIngredientId()).getData());
+//				lstP.add(this.ingredientConverter.toBoundary(i.getIngredient()));
 			} else {
-				lstF.add(this.ingredientConverter.toBoundary(i.getIngredient()));
+				lstF.add(this.ingredientService.findById(i.getId().getIngredientId()).getData());
+//				lstF.add(/*this.ingredientConverter.toBoundary(*/i.getIngredient()/*)*/);
 			}
 		});
 		map.put(IngredientTypeEnum.PREFERRED.name(), lstP.toArray(new IngredientBoundary[0]));
@@ -116,13 +122,13 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 	@Override
 	@Transactional
-	public void update(String userEmail, String[] ingredients, String type) {
-		ArrayList<String> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
+	public void update(String userEmail, Long[] ingredients, String type) {
+		ArrayList<Long> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
 		List<UserIngredient> removedUI = this.userIngreDAL.deleteByUser_EmailAndType(userEmail, type);
 
 		if (type == IngredientTypeEnum.PREFERRED.name()) {
 			for (UserIngredient userIngredient : removedUI) {
-				int idx = ingredientsLst.indexOf(userIngredient.getId().getIngredientName());
+				int idx = ingredientsLst.indexOf(userIngredient.getId().getIngredientId());
 				if (idx != -1) {
 					this.update(userEmail, ingredientsLst.get(idx), IngredientTypeEnum.PREFERRED.name(),
 							userIngredient.getRate());
@@ -139,31 +145,31 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	}
 
 	@Override
-	public void unbind(String userEmail, String[] ingredients) {
+	public void unbind(String userEmail, Long[] ingredients) {
 		for (int i = 0; i < ingredients.length; i++) {
 			this.userIngreDAL.deleteById(new UserIngredientKey(userEmail, ingredients[i]));
 		}
 	}
 
 	@Override
-	public UserIngredient getOne(String user, String ingredientsId) {
-		return this.userIngreDAL.findById(new UserIngredientKey(user, ingredientsId))
+	public UserIngredient getOne(String user, Long ingredientId) {
+		return this.userIngreDAL.findById(new UserIngredientKey(user, ingredientId))
 				.orElseThrow(() -> new RuntimeException("Not Found"));
 
 	}
 
 	@Override
-	public double goodScore(String userEmail, String ingredientId) {
+	public double goodScore(String userEmail, Long ingredientId) {
 		return changeRate(userEmail, ingredientId, -0.5);
 	}
 
 	@Override
-	public double badScore(String userEmail, String ingredientId) {
+	public double badScore(String userEmail, Long ingredientId) {
 		return changeRate(userEmail, ingredientId, 0.5);
 
 	}
 
-	private double changeRate(String userEmail, String ingredientId, double delta) {
+	private double changeRate(String userEmail, Long ingredientId, double delta) {
 		UserIngredient userIngredient = this.getOne(userEmail, ingredientId);
 		userIngredient.setRate(userIngredient.getRate() + delta);
 		return userIngredient.getRate();

@@ -13,8 +13,6 @@ public interface MenuService {
 
 	public MenuBoundary[] searchMenu(Date fromDate, Date toDate);
 
-	public void feedbackMenu(long menuId, long recipeId, MenuFeedbackEnum feedback);
-
 	public MenuBoundary[] getAll(int page, int size);
 
 	public MenuBoundary[] getAllForUser(String userEmail, int page, int size);

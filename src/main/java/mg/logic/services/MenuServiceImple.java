@@ -50,17 +50,20 @@ public class MenuServiceImple implements MenuService {
 
 	@Override
 	@Transactional
-	public MenuBoundary createMenu(String userEmail, int days) {
+	public MenuBoundary createMenu(String userEmail, int numOfRecipes) {
 		// create menu in DB
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
 		menu.setUserEmail(userEmail);
+		
+		//get menu id
 		menu = menuDAL.save(menu);
-		IngredientBoundary[] allUI = userIngrdientsService
+		
+		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
 		// get All user FORBIDDEN ingredients
-		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(Arrays.asList(allUI))
+		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(Arrays.asList(allForbiddenIngredients))
 				.stream().map(this.ingredientConverter::fromBoundary).collect(Collectors.toList());
 		// get All user PREFERRED ingredients
 		// TODO change to get user ingredients
@@ -73,7 +76,7 @@ public class MenuServiceImple implements MenuService {
 
 		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
 
-		for (int i = 0; i < days; i++) {
+		for (int i = 0; i < numOfRecipes; i++) {
 //			RecipeBoundary recipe = recipeEnityties.remove(new Random().nextInt(recipeEnityties.size())); 
 			// for dev only
 			// TODO remove
@@ -91,7 +94,9 @@ public class MenuServiceImple implements MenuService {
 	private List<RecipeWithRate> getListOfRatedRecipes(List<UserIngredient> preferredUserIngredients,
 			List<RecipeBoundary> allAllowRecipes) {
 		ArrayList<RecipeWithRate> rv = new ArrayList<RecipeWithRate>();
+		
 		allAllowRecipes.forEach(recipe -> rv.add(calcRate(recipe, preferredUserIngredients)));
+		
 		return rv;
 	}
 
@@ -139,22 +144,7 @@ public class MenuServiceImple implements MenuService {
 		return lst.toArray(new MenuBoundary[0]);
 	}
 
-	@Override
-	public void feedbackMenu(long menuId, long recipeId, MenuFeedbackEnum feedback) {
-		MenuRecipe menuRecipe = this.menuRecipeService.findOne(menuId, recipeId);
-
-		MenuEntity menu = this.menuDAL.findById(menuId)
-				.orElseThrow(() -> new MenuNotFoundExcetion("Menu with ID: " + menuId + " not found"));
-		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
-			menuRecipe.getRecipe().getRecipeIngredients().stream()
-			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUserEmail(), ingredient.getIngredient().getName()));
 	
-		} else {
-			menu.setNumOfErrors((short) (menu.getNumOfErrors() + 1));
-			menuRecipe.getRecipe().getRecipeIngredients().stream()
-					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUserEmail(), ingredient.getIngredient().getName()));
-		}
-	}
 
 
 	@Override

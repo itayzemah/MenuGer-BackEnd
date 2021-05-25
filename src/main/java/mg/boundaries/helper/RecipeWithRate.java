@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import mg.boundaries.IngredientBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.data.entities.joinentities.UserIngredient;
 
@@ -33,15 +34,15 @@ public class RecipeWithRate extends RecipeBoundary implements Comparator<RecipeW
 	}
 	
 	
-	public RecipeWithRate(RecipeBoundary recipeBoundary, List<UserIngredient> preferredUserIngredients) {
+	public RecipeWithRate(RecipeBoundary recipeBoundary,List<IngredientBoundary> recipeIngredients, List<UserIngredient> preferredUserIngredients) {
 		this(recipeBoundary.getId(), recipeBoundary.getTitle(), recipeBoundary.getIngredients()
 				, recipeBoundary.getInstructions(),recipeBoundary.getImage(), recipeBoundary.getCreatedBy(),0.0);
 		double rate = 0;
-		for (String ingredient : recipeBoundary.getIngredients()) {
-			Optional<UserIngredient> uinger = preferredUserIngredients.stream()
-					.filter(ui -> ui.getIngredient().getName().equals(ingredient)).findFirst();
-			if (uinger.isPresent()) {
-				rate += uinger.get().getRate();
+		for (IngredientBoundary ingredient : recipeIngredients) {
+			Optional<UserIngredient> userIngredient = preferredUserIngredients.stream()
+					.filter(ui -> ui.getIngredientId() == ingredient.getId()).findFirst();
+			if (userIngredient.isPresent()) {
+				rate += userIngredient.get().getRate();
 			}
 		}
 		this.setRate(rate);

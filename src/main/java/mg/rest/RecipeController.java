@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
+import mg.boundaries.helper.MenuFeedbackEnum;
 import mg.logic.RecipeService;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,19 +32,34 @@ public class RecipeController {
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getAll(
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+			@RequestParam(name = "size", required = false, defaultValue = "40") int size) {
 		return this.recipeService.getAll(page, size);
 	}
 
 	@RequestMapping(path = "/by/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getByName(@PathVariable("name") String name,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+			@RequestParam(name = "size", required = false, defaultValue = "20") int size) {
 		return this.recipeService.getByTitle(name, page, size);
 	}
 
 	@RequestMapping(path = "/by/id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RecipeBoundary getById(@PathVariable("id") Long id) {
 		return this.recipeService.getById(id);
+	}
+	
+	@RequestMapping(path = "/bests/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RecipeBoundary[] getAllBestRecipes(@PathVariable("userEmail") String userEmail,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "20") int size) {
+		return this.recipeService.getAllBestRecipesForUser(userEmail);
+	}
+
+	@RequestMapping(path = "/feedback/{userEmail}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void feedbackMenuResults(
+			@PathVariable("userEmail") String userEmail,
+			@RequestParam(name = "feedback", required = true, defaultValue = "GOOD") MenuFeedbackEnum feedback,
+			@RequestParam(name = "recipeId", required = true, defaultValue = "-1") long recipeId) {
+		this.recipeService.feedbackRecipe(recipeId,userEmail, feedback);
 	}
 }

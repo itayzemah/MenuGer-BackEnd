@@ -11,7 +11,7 @@ public interface IngredientService {
 
 	public Response<Void> update(IngredientBoundary ingredientBoundary);
 
-	//public Response<IngredientBoundary> findById(Long ingredientId);
+	public Response<IngredientBoundary> findById(Long ingredientId);
 
 	public Response<IngredientBoundary[]> findByName(String name);
 

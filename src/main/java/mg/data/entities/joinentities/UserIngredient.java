@@ -32,10 +32,10 @@ public class UserIngredient {
 	@JoinColumn(name = "user_email")
 	private UserEntity user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("ingredientName")
-    @JoinColumn(name = "ingredient_name")
-	private IngredientEntity ingredient;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//    @MapsId("ingredientName")
+//    @JoinColumn(name = "ingredient_name")
+	private Long ingredientId;
 
 	private String type;
 	

@@ -24,11 +24,11 @@ import mg.logic.MenuService;
 public class MenuController {
 	private MenuService menuService;
 
-	@RequestMapping(path = "/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public MenuBoundary createMenu(@PathVariable String userEmail,
-			@RequestParam(defaultValue = "6", required = false) int days) {
-		return menuService.createMenu(userEmail, days);
-	}
+//	@RequestMapping(path = "/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public MenuBoundary createMenu(@PathVariable String userEmail,
+//			@RequestParam(defaultValue = "6", required = false) int days) {
+//		return menuService.createMenu(userEmail, days);
+//	}
 
 	@RequestMapping(path = "/all/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public MenuBoundary[] getAll(@PathVariable String userEmail,
@@ -47,12 +47,6 @@ public class MenuController {
 		return menuService.searchMenu(menuSearchBoundary.getFromDate(), menuSearchBoundary.getToDate());
 	}
 
-	@RequestMapping(path = "/feedback", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void feedbackMenuResults(
-			@RequestParam(name = "feedback", required = true, defaultValue = "GOOD") MenuFeedbackEnum feedback,
-			@RequestParam(name = "menuId", required = true, defaultValue = "-1") long menuId,
-			@RequestParam(name = "recipeId", required = true, defaultValue = "-1") long recipeId) {
-		menuService.feedbackMenu(menuId, recipeId, feedback);
-	}
+
 
 }

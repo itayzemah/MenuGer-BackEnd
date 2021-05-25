@@ -28,43 +28,35 @@ public class IngredientApiService implements IngredientService {
 	@Value("${x-rapidapi-host}")
 	private String rapidapiHost;
 
-
 	@Override
 	public Response<IngredientBoundary[]> findByName(String name) {
 		Response<IngredientBoundary[]> retval = new Response<IngredientBoundary[]>();
 		String search = "/autocomplete?query=" + name;
 
 		String body = "";
-		HttpResponse<String> response = null;
-		try {
-			response = Unirest.get(baseUrl + ingredientUrl + search).header("x-rapidapi-key", rapidapiKey)
-					.header("x-rapidapi-host", rapidapiHost).asString();
-		} catch (UnirestException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error connect " + baseUrl + ingredientUrl + search);
-		}
+		HttpResponse<String> response = httpCall(baseUrl + ingredientUrl + search);
 		body = response.getBody();
 		System.err.println(body);
 
-		
 		if (response.getStatus() != 200) {
 			retval.setMessage("Bad request with url: " + baseUrl + ingredientUrl + search);
 			retval.setSuccess(false);
 		} else {
-			ObjectMapper mapper = new ObjectMapper();
-			IngredientBoundary[] values = null;
-			try {
-				values = mapper.readValue(response.getBody(), IngredientBoundary[].class);
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			}
-			retval.setData(values);
+			retval.setData(readObject(response,IngredientBoundary[].class));
 		}
 		return retval;
+	}
+
+	private HttpResponse<String> httpCall(String fullUrl) {
+		HttpResponse<String> response = null;
+		try {
+			response = Unirest.get(baseUrl + ingredientUrl + fullUrl).header("x-rapidapi-key", rapidapiKey)
+					.header("x-rapidapi-host", rapidapiHost).asString();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error connect " + fullUrl);
+		}
+		return response;
 	}
 
 	@Override
@@ -93,6 +85,40 @@ public class IngredientApiService implements IngredientService {
 	public Response<Void> removeAll() {
 		throw new RuntimeException("In this app version there is not option to remove all ingredients.");
 
+	}
+
+	@Override
+	public Response<IngredientBoundary> findById(Long ingredientId) {
+		Response<IngredientBoundary> retval = new Response<IngredientBoundary>();
+		String search = "/" + ingredientId + "/substitutes";
+
+		HttpResponse<String> response = httpCall(baseUrl + ingredientUrl + search);
+		
+		String body = response.getBody();
+		System.err.println(body);
+
+		if (response.getStatus() != 200) {
+			retval.setMessage("Bad request with url: " + baseUrl + ingredientUrl + search);
+			retval.setSuccess(false);
+		} else {
+			retval.setData(readObject(response,IngredientBoundary.class));
+		}
+		return retval;
+	}
+
+	private <T> T readObject(HttpResponse<String> response, Class<T> type) {
+		ObjectMapper mapper = new ObjectMapper();
+		T values = null;
+		try {
+			values = mapper.readValue(response.getBody(), type);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error parsing " + response.getBody());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error parsing " + response.getBody());
+		}
+		return values;
 	}
 
 }

@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
+import mg.boundaries.helper.MenuFeedbackEnum;
 import mg.data.converters.RecipeConverter;
 import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.entities.IngredientEntity;
@@ -79,6 +80,18 @@ public class RecipeServiceImple implements RecipeService {
 		return this.recipeConverter.toBoundary(this.recipeDal.findById(rId)
 				.orElseThrow(() -> new RecipeNotFoundException("Recipe with ID " + rId + " not found")));
 
+	}
+
+	@Override
+	public RecipeBoundary[] getAllBestRecipesForUser(String userEmail) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

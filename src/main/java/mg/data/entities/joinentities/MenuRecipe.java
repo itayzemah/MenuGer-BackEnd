@@ -30,10 +30,10 @@ public class MenuRecipe {
 	@EmbeddedId
 	private MenuRecipeId id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("recipeId")
-	@JoinColumn(name = "recipe_id")
-	private RecipeEntity recipe;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	//@MapsId("recipeId")
+//	@JoinColumn(name = "recipe_id")
+	private Long recipe;
 
 	@ManyToOne(fetch = FetchType.LAZY)
     @MapsId("menuId")

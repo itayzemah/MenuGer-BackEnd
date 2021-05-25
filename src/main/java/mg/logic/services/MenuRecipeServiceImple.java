@@ -29,7 +29,7 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 	public List<RecipeBoundary> getAllForMenu(long menuId) {
 		return menuRecipeDAL.findAllByMenu_id(menuId)
 				.stream()
-				.map(mr -> this.recipeService.getById(mr.getRecipe().getRecipeId()))
+				.map(mr -> this.recipeService.getById(mr.getRecipe()))
 				.collect(Collectors.toList());
 	}
 
@@ -37,8 +37,7 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 	public MenuRecipe create(long menuId, long recipeId) {
 		MenuRecipe mr = new MenuRecipe();
 		mr.setMenu(this.menuDAL.findById(menuId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
-		mr.setRecipe(
-				this.recipeDAL.findById(recipeId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
+		mr.setRecipe(recipeId);
 		mr.setId(new MenuRecipeId(recipeId, menuId));
 		return menuRecipeDAL.save(mr);
 	}

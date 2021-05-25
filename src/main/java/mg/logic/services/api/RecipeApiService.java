@@ -1,6 +1,8 @@
 package mg.logic.services.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,11 +26,21 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import mg.boundaries.IngredientBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
+import mg.boundaries.helper.MenuFeedbackEnum;
+import mg.boundaries.helper.RecipeWithRate;
+import mg.data.converters.IngredientConverter;
 import mg.data.entities.IngredientEntity;
+import mg.data.entities.IngredientTypeEnum;
+import mg.data.entities.MenuEntity;
+import mg.data.entities.joinentities.MenuRecipe;
+import mg.data.entities.joinentities.UserIngredient;
 import mg.logic.RecipeIngredientService;
 import mg.logic.RecipeService;
+import mg.logic.UserIngredientService;
+import mg.logic.exceptions.MenuNotFoundExcetion;
 import mg.logic.exceptions.RecipeNotFoundException;
 
 @Service
@@ -36,7 +48,7 @@ import mg.logic.exceptions.RecipeNotFoundException;
 //@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class RecipeApiService implements RecipeService {
 
-	private RecipeIngredientService recipeIngreService;
+	private UserIngredientService userIngrdientsService;
 	@Value("${spoonacular.base.url}")
 	private String baseUrl;
 	@Value("${spoonacular.recipes.url}")
@@ -45,16 +57,25 @@ public class RecipeApiService implements RecipeService {
 	private String rapidapiKey;
 	@Value("${x-rapidapi-host}")
 	private String rapidapiHost;
+	private IngredientConverter ingredientConverter;
 
 	@Autowired
-	public RecipeApiService(RecipeIngredientService recipeIngreService) {
-		this.recipeIngreService = recipeIngreService;
+	public RecipeApiService(UserIngredientService userIngrdientsService, IngredientConverter ingredientConverter) {
+		this.userIngrdientsService = userIngrdientsService;
+		this.ingredientConverter = ingredientConverter;
 	}
 
 	@Override
 	public Response<RecipeBoundary[]> getAll(int page, int size) {
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
-
+		/*
+		 * HttpResponse<String> response = Unirest.get(
+		 * "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?number=30&excludeIngredients=peanuts")
+		 * .header("x-rapidapi-key",
+		 * "65bc01e644msh253ff15fa2688c0p1fe83djsn741ff5c1ded8")
+		 * .header("x-rapidapi-host",
+		 * "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com") .asString();
+		 */
 		return retval;
 	}
 
@@ -80,8 +101,8 @@ public class RecipeApiService implements RecipeService {
 				String resultsJson = jsonNode.path("results").toString();
 				List<RecipeBoundary> results = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
 				});
-				values = results.stream().map(r-> 
-					this.getById(r.getId())).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
+				values = results.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList())
+						.toArray(new RecipeBoundary[0]);
 			} catch (JsonMappingException e) {
 				e.printStackTrace();
 				throw new RuntimeException("Error parsing " + response.getBody());
@@ -118,15 +139,8 @@ public class RecipeApiService implements RecipeService {
 			try {
 				retval = mapper.readValue(response.getBody(), RecipeBoundary.class);
 				JsonNode jsonNode = mapper.readTree(response.getBody());
-				JsonNode extendedIngredients = jsonNode.path("extendedIngredients");
 				retval.setCreatedBy(jsonNode.path("creditsText").toString().replace("\"", ""));
-				ArrayList<String> ingredients = new ArrayList<>();
-				if (extendedIngredients.isArray()) {
-					for (final JsonNode objNode : extendedIngredients) {
-						ingredients.add(objNode.path("name").toString().replace("\"", ""));
-					}
-				}
-				retval.setIngredients(ingredients.toArray(new String[0]));
+				SetIngredients(retval, jsonNode.path("extendedIngredients"));
 			} catch (JsonMappingException e) {
 				e.printStackTrace();
 				throw new RuntimeException("Error parsing " + response.getBody());
@@ -136,6 +150,16 @@ public class RecipeApiService implements RecipeService {
 			}
 		}
 		return retval;
+	}
+
+	private void SetIngredients(RecipeBoundary retval, JsonNode extendedIngredients) {
+		ArrayList<String> ingredients = new ArrayList<>();
+		if (extendedIngredients.isArray()) {
+			for (final JsonNode objNode : extendedIngredients) {
+				ingredients.add(objNode.path("name").toString().replace("\"", ""));
+			}
+		}
+		retval.setIngredients(ingredients.toArray(new String[0]));
 	}
 
 	private HttpResponse<String> httpCall(String search) {
@@ -156,9 +180,52 @@ public class RecipeApiService implements RecipeService {
 
 	}
 
-	private void setIngredients(RecipeBoundary[] recipeArr) {
-		throw new RuntimeException("In this app version there is not option to setIngredients.");
+	@Override
+	public RecipeBoundary[] getAllBestRecipesForUser(String userEmail) {
+		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
+				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
+		// get All user FORBIDDEN ingredients
+		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(
+				Arrays.asList(allForbiddenIngredients)).stream().map(this.ingredientConverter::fromBoundary)
+						.collect(Collectors.toList());
+		// get All user PREFERRED ingredients
+		// TODO change to get user ingredients
+		List<UserIngredient> preferredUserIngredients = userIngrdientsService
+				.getAllUserIngredientByType(userEmail, IngredientTypeEnum.PREFERRED.name(), 1000, 0).getData();
+
+		// get all appropriate recipes
+		List<RecipeWithRate> recipesWithRate = getListOfRatedRecipes(preferredUserIngredients,
+				this.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients));
+
+		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
+		return recipesWithRate.toArray(new RecipeWithRate[0]);
 	}
 
+	@Override
+	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
+		String[] ingredients = this.getById(recipeId).getIngredients();
+		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
+			for (String ingredient : ingredients) {
+				this.userIngrdientsService.goodScore(userEmail, ingredient);
+			}
+		} else {
+			for (String ingredient : ingredients) {
+				this.userIngrdientsService.badScore(userEmail, ingredient);
+			}
+		}
+	}
+
+	private List<RecipeWithRate> getListOfRatedRecipes(List<UserIngredient> preferredUserIngredients,
+			List<RecipeBoundary> allAllowRecipes) {
+		ArrayList<RecipeWithRate> rv = new ArrayList<RecipeWithRate>();
+
+		allAllowRecipes.forEach(recipe -> rv.add(calcRate(recipe, preferredUserIngredients)));
+
+		return rv;
+	}
+
+	private RecipeWithRate calcRate(RecipeBoundary recipe, List<UserIngredient> preferredUserIngredients) {
+		return new RecipeWithRate(recipe, preferredUserIngredients);
+	}
 }
