@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import mg.boundaries.IngredientBoundary;
+import mg.data.converters.IngredientConverter;
 import mg.data.dal.IngredientDataAccessRepo;
 import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.dal.RecipeIngredientDataAccessLayerRepo;
@@ -23,7 +25,7 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 	private IngredientDataAccessRepo ingreDAL;
 	private RecipeIngredientDataAccessLayerRepo recipeIngreDAL;
 	private RecipeDataAccessLayerRepo recipeDAL;
-
+	private IngredientConverter ingredientsConverter;
 	@Transactional
 	@Override
 	public void update(long recipeId, String ingredientName) {
@@ -48,11 +50,11 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public String[] getAllForRecipe(long recipeId) {
-		List<String> rv = new ArrayList<>();
+	public IngredientBoundary[] getAllForRecipe(long recipeId) {
+		List<IngredientBoundary> rv = new ArrayList<>();
 		this.recipeIngreDAL.findByRecipe_RecipeId(recipeId)
-				.forEach(ri -> rv.add(ri.getIngredient().getName()));
-		return rv.toArray(new String[0]);
+				.forEach(ri -> rv.add(this.ingredientsConverter.toBoundary(ri.getIngredient())));
+		return rv.toArray(new IngredientBoundary[0]);
 	}
 
 	@Transactional

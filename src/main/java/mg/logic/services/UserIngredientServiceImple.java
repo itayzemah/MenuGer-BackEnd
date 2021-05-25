@@ -52,7 +52,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 
 		UserIngredient userIngredient = new UserIngredient();
-		userIngredient.setIngredientId(ingredientRes.getData().getId());
+//		userIngredient.setIngredientId(ingredientRes.getData().getId());
 		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
 		userIngredient.setRate(rate);
@@ -74,7 +74,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
 				PageRequest.of(page, size));
-		rv.setData(lst.stream().map((ui) -> ui.getIngredientId())//.map(this.ingredientConverter::toBoundary)
+		rv.setData(lst.stream().map((ui) -> ui.getId().getIngredientId())//.map(this.ingredientConverter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
 		return rv;
 	}

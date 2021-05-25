@@ -152,14 +152,15 @@ public class RecipeApiService implements RecipeService {
 		return retval;
 	}
 
-	private void SetIngredients(RecipeBoundary retval, JsonNode extendedIngredients) {
-		ArrayList<String> ingredients = new ArrayList<>();
+	private void SetIngredients(RecipeBoundary recipe, JsonNode extendedIngredients) throws JsonMappingException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<IngredientBoundary> ingredients = new ArrayList<>();
 		if (extendedIngredients.isArray()) {
 			for (final JsonNode objNode : extendedIngredients) {
-				ingredients.add(objNode.path("name").toString().replace("\"", ""));
+				ingredients.add(mapper.readValue(extendedIngredients.toString(), IngredientBoundary.class));
 			}
 		}
-		retval.setIngredients(ingredients.toArray(new String[0]));
+		recipe.setIngredients(ingredients.toArray(new IngredientBoundary[0]));
 	}
 
 	private HttpResponse<String> httpCall(String search) {
@@ -204,14 +205,14 @@ public class RecipeApiService implements RecipeService {
 
 	@Override
 	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
-		String[] ingredients = this.getById(recipeId).getIngredients();
+		IngredientBoundary[] ingredients = this.getById(recipeId).getIngredients();
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
-			for (String ingredient : ingredients) {
-				this.userIngrdientsService.goodScore(userEmail, ingredient);
+			for (IngredientBoundary ingredient : ingredients) {
+				this.userIngrdientsService.goodScore(userEmail, ingredient.getId());
 			}
 		} else {
-			for (String ingredient : ingredients) {
-				this.userIngrdientsService.badScore(userEmail, ingredient);
+			for (IngredientBoundary ingredient : ingredients) {
+				this.userIngrdientsService.badScore(userEmail, ingredient.getId());
 			}
 		}
 	}

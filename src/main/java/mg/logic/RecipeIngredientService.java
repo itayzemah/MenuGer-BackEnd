@@ -2,6 +2,8 @@ package mg.logic;
 
 import java.util.List;
 
+import mg.boundaries.IngredientBoundary;
+
 
 public interface RecipeIngredientService {
 
@@ -11,6 +13,6 @@ public interface RecipeIngredientService {
 	
 	public void remove(long recipeId, String ingredientName);
 
-	public String[] getAllForRecipe(long recipeId);
+	public IngredientBoundary[] getAllForRecipe(long recipeId);
 	
 }

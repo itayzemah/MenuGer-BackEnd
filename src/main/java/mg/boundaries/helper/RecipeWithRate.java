@@ -22,7 +22,7 @@ public class RecipeWithRate extends RecipeBoundary implements Comparator<RecipeW
 
 	private Double rate;
 
-	public RecipeWithRate(long recipeId, @NonNull String name, String[] ingredients, String instructions,String image,
+	public RecipeWithRate(long recipeId, @NonNull String name, IngredientBoundary[] ingredients, String instructions,String image,
 			String createdBy,Double rate) {
 		super(recipeId, name, ingredients,instructions, createdBy,image);
 		this.rate = rate;
@@ -34,13 +34,13 @@ public class RecipeWithRate extends RecipeBoundary implements Comparator<RecipeW
 	}
 	
 	
-	public RecipeWithRate(RecipeBoundary recipeBoundary,List<IngredientBoundary> recipeIngredients, List<UserIngredient> preferredUserIngredients) {
+	public RecipeWithRate(RecipeBoundary recipeBoundary, List<UserIngredient> preferredUserIngredients) {
 		this(recipeBoundary.getId(), recipeBoundary.getTitle(), recipeBoundary.getIngredients()
 				, recipeBoundary.getInstructions(),recipeBoundary.getImage(), recipeBoundary.getCreatedBy(),0.0);
 		double rate = 0;
-		for (IngredientBoundary ingredient : recipeIngredients) {
+		for (IngredientBoundary ingredient : recipeBoundary.getIngredients()) {
 			Optional<UserIngredient> userIngredient = preferredUserIngredients.stream()
-					.filter(ui -> ui.getIngredientId() == ingredient.getId()).findFirst();
+					.filter(ui -> ui.getId().getIngredientId() == ingredient.getId()).findFirst();
 			if (userIngredient.isPresent()) {
 				rate += userIngredient.get().getRate();
 			}

@@ -27,8 +27,8 @@ import mg.data.entities.joinentities.RecipeIngredient;
 @Setter
 @ToString
 @EqualsAndHashCode
-//@Entity
-//@Table(name = "RECIPES")
+@Entity
+@Table(name = "RECIPES")
 public class RecipeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id

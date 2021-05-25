@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
+import mg.boundaries.IngredientBoundary;
 import mg.logic.RecipeIngredientService;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -35,7 +36,7 @@ public class RecipeIngredientController {
 	}
 	
 	@RequestMapping(path="/{recipeId}", method = RequestMethod.GET)
-	public String[] getAll(@PathVariable long recipeId){
+	public IngredientBoundary[] getAll(@PathVariable long recipeId){
 		return recipeIngredientService.getAllForRecipe(recipeId);
 	}
 	

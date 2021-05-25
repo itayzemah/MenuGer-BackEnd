@@ -20,7 +20,7 @@ import lombok.ToString;
 public class RecipeBoundary {
 	 private long id ;
 	 private @NonNull String title;
-	 private String[] ingredients;
+	 private IngredientBoundary[] ingredients;
 	 private String instructions;
 	 private String createdBy ;
 	 private String image ;

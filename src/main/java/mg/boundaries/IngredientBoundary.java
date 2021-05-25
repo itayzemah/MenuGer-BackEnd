@@ -1,5 +1,7 @@
 package mg.boundaries;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +16,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IngredientBoundary {
 	private Long id;
 	@NonNull
