@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import lombok.AllArgsConstructor;
@@ -37,7 +40,7 @@ public class IngredientsController {
 	@RequestMapping
 	(path="name/{name}", method = RequestMethod.GET,
 	produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary[]> findByName(@PathVariable String name){
+	public Response<IngredientBoundary[]> findByName(@PathVariable String name) throws JsonMappingException, JsonProcessingException, UnirestException{
 		return ingredientService.findByName(name);
 	}
 

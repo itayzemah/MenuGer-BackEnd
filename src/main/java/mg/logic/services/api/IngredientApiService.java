@@ -1,12 +1,18 @@
 package mg.logic.services.api;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -39,35 +45,34 @@ public class IngredientApiService implements IngredientService {
 	}
 
 	@Override
-	public Response<IngredientBoundary[]> findByName(String name) {
+	public Response<IngredientBoundary[]> findByName(String name) throws JsonMappingException, JsonProcessingException, UnirestException {
 		Response<IngredientBoundary[]> retval = new Response<IngredientBoundary[]>();
 		String search = "/autocomplete?query=" + name;
 		// SpoonacularSearchResult<IngredientBoundary> result =
 		// client.getForObject(baseUrl + ingredientUrl+search,
 		// SpoonacularSearchResult.class);
-		
-		try {
-			HttpResponse<String> response1 = Unirest.get(baseUrl + ingredientUrl + search)
-					.header("x-rapidapi-key", "65bc01e644msh253ff15fa2688c0p1fe83djsn741ff5c1ded8")
-					.header("x-rapidapi-host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
-					.asString();
-		} catch (UnirestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-		
-		ResponseEntity<SpoonacularSearchResult<IngredientBoundary>> response = client.exchange(
-				baseUrl + ingredientUrl + search, HttpMethod.GET, null,
-				new ParameterizedTypeReference<SpoonacularSearchResult<IngredientBoundary>>() {
-				});
-		if (response.getStatusCode().isError()) {
+		String body = "";
+		HttpResponse<String> response = Unirest.get(baseUrl + ingredientUrl + search)
+				.header("x-rapidapi-key", rapidapiKey).header("x-rapidapi-host", rapidapiHost).asString();
+		body = response.getBody();
+		System.err.println(body);
+
+		/*
+		 * HttpHeaders headers = new HttpHeaders(); headers.set("x-rapidapi-host",
+		 * rapidapiHost); headers.set("x-rapidapi-key", rapidapiKey); HttpEntity<?>
+		 * entity = new HttpEntity<Object>(headers);
+		 * 
+		 * ResponseEntity<SpoonacularSearchResult<IngredientBoundary>> response =
+		 * client.exchange( baseUrl + ingredientUrl + search, HttpMethod.GET, entity,
+		 * SpoonacularSearchResult<IngredientBoundary>.class);
+		 */
+		if (response.getStatus()!= 200) {
 			retval.setMessage("Bad request with url: " + baseUrl + ingredientUrl + search);
 			retval.setSuccess(false);
 		} else {
-			retval.setData(response.getBody().getResults());
+			ObjectMapper mapper = new ObjectMapper();
+			IngredientBoundary[] values = mapper.readValue(response.getBody(), IngredientBoundary[].class);
+			retval.setData(values);
 		}
 		return retval;
 	}
