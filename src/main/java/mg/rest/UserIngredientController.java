@@ -29,15 +29,15 @@ public class UserIngredientController {
 			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestParam(name = "weight", required = false, defaultValue = "null") Double weight,
-			@PathVariable("ingredientId") long ingredientId) {
-		userIngreService.update(userEmail, ingredientId, type.toString(),weight);
+			@PathVariable("ingredientId") String ingredientName) {
+		userIngreService.update(userEmail, ingredientName, type.toString(),weight);
 	}
 	
 	// PUT /update/{userEmail}?type=???<IngredientTypeEnum>
 	@RequestMapping(path = "/update/{userEmail}", method = RequestMethod.PUT)
 	public void bind(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
-			@RequestBody Long[] ingredients) {
+			@RequestBody String[] ingredients) {
 		userIngreService.update(userEmail, ingredients, type.toString());
 	}
 

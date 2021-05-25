@@ -33,8 +33,8 @@ public class UserIngredient {
 	private UserEntity user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("ingredientId")
-    @JoinColumn(name = "ingredient_id")
+    @MapsId("ingredientName")
+    @JoinColumn(name = "ingredient_name")
 	private IngredientEntity ingredient;
 
 	private String type;

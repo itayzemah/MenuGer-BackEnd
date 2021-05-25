@@ -11,8 +11,8 @@ import mg.data.entities.RecipeEntity;
 
 public interface RecipeDataAccessLayerRepo extends JpaRepository<RecipeEntity, Long> {
 	
-	public List<RecipeEntity> findAllByName(String name, Pageable pageRequest);
+	public List<RecipeEntity> findAllByTitle(String title, Pageable pageRequest);
 	
-	public List<RecipeEntity> findDistinctByRecipeIngredients_IngredientNotIn(Collection<IngredientEntity> ingrdients);
+	public List<RecipeEntity> findDistinctByRecipeIngredients_IngredientNotIn(Collection<IngredientEntity> ingredients);
 
 }

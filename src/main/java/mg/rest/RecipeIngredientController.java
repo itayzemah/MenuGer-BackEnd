@@ -23,15 +23,15 @@ public class RecipeIngredientController {
 	private RecipeIngredientService recipeIngredientService;
 	
 	@RequestMapping(path ="/update/{recipeId}/{ingredientId}", method=RequestMethod.PUT)
-	public void update(@PathVariable long recipeId, @PathVariable long ingredientId,
+	public void update(@PathVariable long recipeId, @PathVariable String ingredientName,
 			@RequestParam(required = true, defaultValue = "0.0") double ammount) {
-		recipeIngredientService.update(recipeId, ingredientId);
+		recipeIngredientService.update(recipeId, ingredientName);
 	}
 	
 	@RequestMapping(path = "/bind/{recipeId}", method = RequestMethod.PUT)
 	public void bind(@PathVariable long recipeId,
-			@RequestBody  List<Long> recipes) {
-		recipeIngredientService.bind(recipeId, recipes);
+			@RequestBody  List<String> ingredients) {
+		recipeIngredientService.bind(recipeId, ingredients);
 	}
 	
 	@RequestMapping(path="/{recipeId}", method = RequestMethod.GET)
@@ -39,9 +39,9 @@ public class RecipeIngredientController {
 		return recipeIngredientService.getAllForRecipe(recipeId);
 	}
 	
-	@RequestMapping(path="/{recipeId}/{ingredientId}", method = RequestMethod.DELETE)
-	public void remove(@PathVariable long recipeId, @PathVariable long ingredientId) {
-		this.recipeIngredientService.remove(recipeId, ingredientId);
+	@RequestMapping(path="/{recipeId}/{ingredientName}", method = RequestMethod.DELETE)
+	public void remove(@PathVariable long recipeId, @PathVariable String ingredientName) {
+		this.recipeIngredientService.remove(recipeId, ingredientName);
 	}
 
 }

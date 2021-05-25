@@ -78,7 +78,7 @@ public class MenuServiceImple implements MenuService {
 			// for dev only
 			// TODO remove
 			RecipeBoundary recipe = recipesWithRate.get(new Random().nextInt(recipesWithRate.size()));
-			menuRecipeService.create(menu.getId(), recipe.getRecipeId());
+			menuRecipeService.create(menu.getId(), recipe.getId());
 		}
 
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);
@@ -117,7 +117,7 @@ public class MenuServiceImple implements MenuService {
 		for (int i = 0; i < recipeId.length; i++) {
 
 			recipes.add(this.recipeService.getById(recipeId[i]));
-			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getRecipeId()));
+			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getId()));
 		}
 //		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
@@ -147,12 +147,12 @@ public class MenuServiceImple implements MenuService {
 				.orElseThrow(() -> new MenuNotFoundExcetion("Menu with ID: " + menuId + " not found"));
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
 			menuRecipe.getRecipe().getRecipeIngredients().stream()
-			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUserEmail(), ingredient.getIngredient().getId()));
+			.forEach(ingredient -> this.userIngrdientsService.goodScore(menu.getUserEmail(), ingredient.getIngredient().getName()));
 	
 		} else {
 			menu.setNumOfErrors((short) (menu.getNumOfErrors() + 1));
 			menuRecipe.getRecipe().getRecipeIngredients().stream()
-					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUserEmail(), ingredient.getIngredient().getId()));
+					.forEach(ingredient -> this.userIngrdientsService.badScore(menu.getUserEmail(), ingredient.getIngredient().getName()));
 		}
 	}
 

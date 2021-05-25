@@ -22,7 +22,7 @@ import mg.data.entities.RecipeEntity;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity(name="recipe_ingredient")
+//@Entity(name="recipe_ingredient")
 public class RecipeIngredient {
 	@EmbeddedId
 	private RecipeIngredientId id;

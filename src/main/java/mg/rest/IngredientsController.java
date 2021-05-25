@@ -29,13 +29,13 @@ import mg.logic.IngredientService;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class IngredientsController {
 	private IngredientService ingredientService;
-	
-	@RequestMapping
-	(path="id/{id}", method = RequestMethod.GET,
-	produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary> findById(@PathVariable("id") long ingredientId){
-		return ingredientService.findById(ingredientId);
-	}
+//	
+//	@RequestMapping
+//	(path="id/{id}", method = RequestMethod.GET,
+//	produces = MediaType.APPLICATION_JSON_VALUE)
+//	public Response<IngredientBoundary> findById(@PathVariable("id") long ingredientId){
+//		return ingredientService.findById(ingredientId);
+//	}
 
 	@RequestMapping
 	(path="name/{name}", method = RequestMethod.GET,
@@ -86,6 +86,20 @@ public class IngredientsController {
 	@ExceptionHandler
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
 	public Response<String> handleException(SQLServerException e) {
+		Response<String> response = new Response<String>();
+		String error = e.getMessage();
+		if (error == null) {
+			error = "Not found";
+		}
+		response.setData(error);
+		response.setSuccess(false);
+		response.setMessage(error);
+		return response;
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public Response<String> handleException(RuntimeException e) {
 		Response<String> response = new Response<String>();
 		String error = e.getMessage();
 		if (error == null) {

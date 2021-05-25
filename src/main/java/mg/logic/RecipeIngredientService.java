@@ -5,11 +5,11 @@ import java.util.List;
 
 public interface RecipeIngredientService {
 
-	public void update(long recipeId, long ingredientId);
+	public void update(long recipeId, String ingredientName);
 
-	public void bind(long recipeId,List<Long> ingredients);
+	public void bind(long recipeId,List<String> ingredients);
 	
-	public void remove(long recipeId, long ingredientId);
+	public void remove(long recipeId, String ingredientName);
 
 	public String[] getAllForRecipe(long recipeId);
 	

@@ -20,7 +20,7 @@ import mg.logic.RecipeIngredientService;
 import mg.logic.RecipeService;
 import mg.logic.exceptions.RecipeNotFoundException;
 
-@Service
+//@Service
 @NoArgsConstructor
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class RecipeServiceImple implements RecipeService {
@@ -51,9 +51,9 @@ public class RecipeServiceImple implements RecipeService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Response<RecipeBoundary[]> getByName(String name, int page, int size) {
+	public Response<RecipeBoundary[]> getByTitle(String name, int page, int size) {
 		Response<RecipeBoundary[]> rv = new Response<RecipeBoundary[]>();
-		RecipeBoundary[] recipeArr = this.recipeDal.findAllByName(name, PageRequest.of(page, size)).stream()
+		RecipeBoundary[] recipeArr = this.recipeDal.findAllByTitle(name, PageRequest.of(page, size)).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
 		setIngredients(recipeArr);
 		rv.setData(recipeArr);
@@ -62,7 +62,7 @@ public class RecipeServiceImple implements RecipeService {
 
 	private void setIngredients(RecipeBoundary[] recipeArr) {
 		for (int i = 0; i < recipeArr.length; i++) {
-			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getRecipeId()));
+			recipeArr[i].setIngredients(recipeIngreService.getAllForRecipe(recipeArr[i].getId()));
 		}
 	}
 
@@ -70,7 +70,7 @@ public class RecipeServiceImple implements RecipeService {
 	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr) {
 		List<RecipeBoundary> rv =  this.recipeDal.findDistinctByRecipeIngredients_IngredientNotIn(uiArr).stream()
 				.map(this.recipeConverter::toBoundary).collect(Collectors.toList());
-				rv.forEach(r-> r.setIngredients(this.recipeIngreService.getAllForRecipe(r.getRecipeId())));
+				rv.forEach(r-> r.setIngredients(this.recipeIngreService.getAllForRecipe(r.getId())));
 				return rv;
 	}
 

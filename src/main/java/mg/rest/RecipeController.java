@@ -39,7 +39,7 @@ public class RecipeController {
 	public Response<RecipeBoundary[]> getByName(@PathVariable("name") String name,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
-		return this.recipeService.getByName(name, page, size);
+		return this.recipeService.getByTitle(name, page, size);
 	}
 
 	@RequestMapping(path = "/by/id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

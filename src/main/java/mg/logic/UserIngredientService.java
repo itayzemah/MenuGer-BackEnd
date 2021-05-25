@@ -9,21 +9,21 @@ import mg.data.entities.joinentities.UserIngredient;
 
 public interface UserIngredientService {
 
-	public UserIngredient update(String userEmail, long ingredientId,String type,Double weight);
+	public UserIngredient update(String userEmail, String ingredientName,String type,Double weight);
 
 	public Response<IngredientBoundary[]> getAllByType(String userEmail, String type, int size, int page);
 
-	public void update(String userEmail, Long[] ingredients, String type);
+	public void update(String userEmail, String[] ingredients, String type);
 
 	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);
 
-	public void unbind(String userEmail, Long[] ingredients);
+	public void unbind(String userEmail, String[] ingredients);
 
 	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page);
 
-	public UserIngredient getOne(String user, long recipeId);	
+	public UserIngredient getOne(String user, String ingredientName);	
 	
-	public double goodScore(String userEmail, long recipeId);
+	public double goodScore(String userEmail, String ingredientName);
 	
-	public double badScore(String userEmail, long recipeId);
+	public double badScore(String userEmail, String ingredientName);
 }

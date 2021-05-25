@@ -1,5 +1,7 @@
 package mg.boundaries;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,10 +16,12 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RecipeBoundary {
-	 private long recipeId ;
-	 private @NonNull String name;
+	 private long id ;
+	 private @NonNull String title;
 	 private String[] ingredients;
-	 private String prepartion;
+	 private String instructions;
 	 private String createdBy ;
+	 private String image ;
 }

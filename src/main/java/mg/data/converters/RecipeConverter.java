@@ -13,17 +13,19 @@ public class RecipeConverter {
 	public RecipeEntity fromBoundary(RecipeBoundary boundary) {
 		RecipeEntity entity = new RecipeEntity();
 		entity.setCreatedBy(boundary.getCreatedBy());
-		entity.setName(boundary.getName());
-		entity.setPrepartion(boundary.getPrepartion());
-		entity.setRecipeId(boundary.getRecipeId());
+		entity.setTitle(boundary.getTitle());
+		entity.setInstructions(boundary.getInstructions());
+		entity.setRecipeId(boundary.getId());
+		entity.setImage(boundary.getImage());
 		return entity;
 	}
 	public RecipeBoundary toBoundary(RecipeEntity entity) {
 		RecipeBoundary boundary = new RecipeBoundary();
 		boundary.setCreatedBy(entity.getCreatedBy());
-		boundary.setName(entity.getName());
-		boundary.setPrepartion(entity.getPrepartion());
-		boundary.setRecipeId(entity.getRecipeId());
+		boundary.setTitle(entity.getTitle());
+		boundary.setInstructions(entity.getInstructions());
+		boundary.setId(entity.getRecipeId());
+		boundary.setImage(entity.getImage());
 		return boundary;
 	}
 	

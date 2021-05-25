@@ -40,13 +40,13 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 
 	@Override
-	public Response<Void> remove(Long ingredientId) {
+	public Response<Void> remove(String ingredientName) {
 		Response<Void> rv = new Response<Void>();
-		if (!this.ingredientDAL.existsById(ingredientId)) {
+		if (!this.ingredientDAL.existsById(ingredientName)) {
 			rv.setSuccess(false);
 			rv.setMessage("No Ingredient with this Id");
 		} else {
-			this.ingredientDAL.deleteById(ingredientId);
+			this.ingredientDAL.deleteById(ingredientName);
 		}
 		return rv;
 	}
@@ -54,7 +54,7 @@ public class IngredientServiceImpl implements IngredientService {
 	@Override
 	public Response<Void> update(IngredientBoundary ingredientBoundary) {
 		Response<Void> rv = new Response<Void>();
-		if (!this.ingredientDAL.existsById(ingredientBoundary.getId())) {
+		if (!this.ingredientDAL.existsById(ingredientBoundary.getName())) {
 			rv.setSuccess(false);
 			rv.setMessage("No Ingredient with this Id");
 		} else if (ingredientBoundary.getName() == null || ingredientBoundary.getName().isEmpty()) {
@@ -66,16 +66,16 @@ public class IngredientServiceImpl implements IngredientService {
 		return rv;
 	}
 
-	@Override
-	public Response<IngredientBoundary> findById(Long ingredientId) {
-		Response<IngredientBoundary> rv = new Response<IngredientBoundary>();
-		rv.setData(this.converter.toBoundary(this.ingredientDAL.findById(ingredientId).orElseGet(() -> {
-			rv.setSuccess(false);
-			rv.setMessage("No Ingredient with this ID");
-			return null;
-		})));
-		return rv;
-	}
+//	@Override
+//	public Response<IngredientBoundary> findById(Long ingredientId) {
+//		Response<IngredientBoundary> rv = new Response<IngredientBoundary>();
+//		rv.setData(this.converter.toBoundary(this.ingredientDAL.findById(ingredientId).orElseGet(() -> {
+//			rv.setSuccess(false);
+//			rv.setMessage("No Ingredient with this ID");
+//			return null;
+//		})));
+//		return rv;
+//	}
 
 	@Override
 	public Response<IngredientBoundary[]> findByName(String name) {

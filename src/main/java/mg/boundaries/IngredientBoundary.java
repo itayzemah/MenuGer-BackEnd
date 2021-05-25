@@ -15,13 +15,10 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class IngredientBoundary {
-	private Long id;
 	@NonNull
 	private String name;
 	private String image;
 	private String imageUrl;
-	//https://spoonacular.com/cdn/ingredients_250x250/ + image
-	
 	public String getImageUrl() {
 		return "https://spoonacular.com/cdn/ingredients_250x250/" + image;
 	}

@@ -26,19 +26,19 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 
 	@Transactional
 	@Override
-	public void update(long recipeId, long ingredientId) {
+	public void update(long recipeId, String ingredientName) {
 		RecipeIngredient ri = new RecipeIngredient();
 		ri.setRecipe(recipeDAL.findById(recipeId)
 				.orElseThrow(() -> new RecipeNotFoundException("recipe with id " + recipeId + " not found")));
-		ri.setIngredient(ingreDAL.findById(ingredientId).orElseThrow(
-				() -> new IngredientNotFoundException("ingredient with id: " + ingredientId + " not found")));
-		ri.setId(new RecipeIngredientId(recipeId, ingredientId));
+		ri.setIngredient(ingreDAL.findById(ingredientName).orElseThrow(
+				() -> new IngredientNotFoundException("ingredient with id: " + ingredientName + " not found")));
+		ri.setId(new RecipeIngredientId(recipeId, ingredientName));
 		recipeIngreDAL.save(ri);
 	}
 
 	@Transactional
 	@Override
-	public void bind(long recipeId, List<Long> ingredients) {
+	public void bind(long recipeId, List<String> ingredients) {
 		if(!this.recipeDAL.existsById(recipeId)) {
 			throw new RecipeNotFoundException("recipe with id "+recipeId+" not found");
 		}
@@ -57,8 +57,8 @@ public class RecipeIngredientServiceImple implements RecipeIngredientService {
 
 	@Transactional
 	@Override
-	public void remove(long recipeId, long ingredientId) {
-		this.recipeIngreDAL.deleteById(new RecipeIngredientId(recipeId, ingredientId));
+	public void remove(long recipeId, String ingredientName) {
+		this.recipeIngreDAL.deleteById(new RecipeIngredientId(recipeId, ingredientName));
 	}
 
 }

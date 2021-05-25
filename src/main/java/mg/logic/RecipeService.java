@@ -12,7 +12,7 @@ public interface RecipeService {
 
 	Response<RecipeBoundary[]> getAll(int page, int size);
 
-	Response<RecipeBoundary[]> getByName(String name, int page, int size);
+	Response<RecipeBoundary[]> getByTitle(String name, int page, int size);
 
 	List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr);
 

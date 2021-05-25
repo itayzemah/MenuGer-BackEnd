@@ -27,5 +27,5 @@ public class RecipeIngredientId implements Serializable{
 	private @NonNull Long recipeId;
     
 	@Column(name = "ingredient_id")
-	private @NonNull Long ingredientId;
+	private @NonNull String ingredientId;
 }

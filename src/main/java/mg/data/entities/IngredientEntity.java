@@ -31,16 +31,15 @@ import mg.data.entities.joinentities.UserIngredient;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity
-@Table(name= "INGREDIENTS",uniqueConstraints= {@UniqueConstraint(columnNames = {"name"})})
+//@Entity
+//@Table(name= "INGREDIENTS",uniqueConstraints= {@UniqueConstraint(columnNames = {"name"})})
 public class IngredientEntity {
    
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private Long id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id //private Long id;
     @Column(nullable =false)
     private String name;
-
-    private String ingredientGroup;
+    private String image;
     
     @OneToMany( mappedBy = "ingredient",fetch = FetchType.LAZY)
     private Set<UserIngredient> userIngredients;
