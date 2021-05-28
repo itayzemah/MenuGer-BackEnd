@@ -82,7 +82,7 @@ public class RecipeApiService implements RecipeService {
 	@Override
 	public Response<RecipeBoundary[]> getByTitle(String name, int page, int size) {
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
-		String search = "/complexSearch?addRecipeInformation=true&query=" + name + "&offset=" + page * size + "&number="
+		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset=" + page * size + "&number="
 				+ size;
 
 		String body = "";
@@ -157,7 +157,7 @@ public class RecipeApiService implements RecipeService {
 		ArrayList<IngredientBoundary> ingredients = new ArrayList<>();
 		if (extendedIngredients.isArray()) {
 			for (final JsonNode objNode : extendedIngredients) {
-				ingredients.add(mapper.readValue(extendedIngredients.toString(), IngredientBoundary.class));
+				ingredients.add(mapper.readValue(objNode.toString(), IngredientBoundary.class));
 			}
 		}
 		recipe.setIngredients(ingredients.toArray(new IngredientBoundary[0]));

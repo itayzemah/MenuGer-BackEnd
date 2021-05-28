@@ -13,7 +13,7 @@ public interface IngredientService {
 
 	public Response<IngredientBoundary> findById(Long ingredientId);
 
-	public Response<IngredientBoundary[]> findByName(String name);
+	public Response<IngredientBoundary[]> findByName(String name,int size, int page);
 
 	public Response<IngredientBoundary[]> getAll(int size, int page);
 

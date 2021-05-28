@@ -78,7 +78,7 @@ public class IngredientServiceImpl implements IngredientService {
 //	}
 
 	@Override
-	public Response<IngredientBoundary[]> findByName(String name) {
+	public Response<IngredientBoundary[]> findByName(String name,int size, int page) {
 		Response<IngredientBoundary[]> rv = new Response<>();
 
 		rv.setData(this.ingredientDAL.findAllByName(name).stream().map(this.converter::toBoundary)

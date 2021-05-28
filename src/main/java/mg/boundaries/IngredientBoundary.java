@@ -22,6 +22,7 @@ public class IngredientBoundary {
 	@NonNull
 	private String name;
 	private String image;
+	private String original;
 	private String imageUrl;
 	public String getImageUrl() {
 		return "https://spoonacular.com/cdn/ingredients_250x250/" + image;

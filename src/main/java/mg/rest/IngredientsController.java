@@ -40,8 +40,10 @@ public class IngredientsController {
 	@RequestMapping
 	(path="name/{name}", method = RequestMethod.GET,
 	produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<IngredientBoundary[]> findByName(@PathVariable String name) throws JsonMappingException, JsonProcessingException, UnirestException{
-		return ingredientService.findByName(name);
+	public Response<IngredientBoundary[]> findByName(@PathVariable String name,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) throws JsonMappingException, JsonProcessingException, UnirestException{
+		return ingredientService.findByName(name,size, page);
 	}
 
 	@RequestMapping

@@ -29,12 +29,13 @@ public class IngredientApiService implements IngredientService {
 	private String rapidapiHost;
 
 	@Override
-	public Response<IngredientBoundary[]> findByName(String name) {
+	public Response<IngredientBoundary[]> findByName(String name,int size, int page) {
 		Response<IngredientBoundary[]> retval = new Response<IngredientBoundary[]>();
-		String search = "/autocomplete?query=" + name;
+		String search = "/autocomplete?metaInformation=true&query=" + name+"&number=" + size;
 
+		String fullUrl = baseUrl + ingredientUrl + search;
 		String body = "";
-		HttpResponse<String> response = httpCall(baseUrl + ingredientUrl + search);
+		HttpResponse<String> response = httpCall(fullUrl);
 		body = response.getBody();
 		System.err.println(body);
 
@@ -50,7 +51,7 @@ public class IngredientApiService implements IngredientService {
 	private HttpResponse<String> httpCall(String fullUrl) {
 		HttpResponse<String> response = null;
 		try {
-			response = Unirest.get(baseUrl + ingredientUrl + fullUrl).header("x-rapidapi-key", rapidapiKey)
+			response = Unirest.get(fullUrl).header("x-rapidapi-key", rapidapiKey)
 					.header("x-rapidapi-host", rapidapiHost).asString();
 		} catch (UnirestException e) {
 			e.printStackTrace();
