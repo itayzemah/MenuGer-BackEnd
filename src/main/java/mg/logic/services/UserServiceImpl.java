@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 		}
 		emailValidationCheck(user.getEmail());
 		UserEntity entity = this.userConverter.fromBoundary(user);
-	
+		entity.setActive(true);
 		Response<UserBoundary> rv = new Response<>();
 		rv.setData(this.userConverter.toBoundary(this.userDAL.save(entity)));
 		return rv;
@@ -60,7 +60,9 @@ public class UserServiceImpl implements UserService {
 			return rv;
 		}
 		try {
-			this.userDAL.deleteById(user.getEmail());
+			UserEntity entity = opUser.get();
+			entity.setActive(false);
+			this.userDAL.save(entity);
 			rv.setMessage("User" + user.getEmail() + "Unsubscribed successfully");
 		} catch (IllegalArgumentException ex) {
 			rv.setMessage("Wrong User");
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response<UserBoundary> login(UserLoginBoundary user) {
 		Response<UserBoundary> rv = new Response<>();
-		Optional<UserEntity> opUser = this.userDAL.findById(user.getEmail());
+		Optional<UserEntity> opUser = this.userDAL.findByEmailAndIsActive(user.getEmail(),true);
 		if (!opUser.isPresent()) {
 			throw new UserNotFoundException("User with the id: " + user.getEmail() + " is not in registered");
 		}

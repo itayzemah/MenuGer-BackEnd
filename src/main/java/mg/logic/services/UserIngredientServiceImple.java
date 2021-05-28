@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
 import mg.data.converters.IngredientConverter;
-import mg.data.dal.IngredientDataAccessRepo;
 import mg.data.dal.UserDataAccessRepo;
 import mg.data.dal.UserIngredientDataAccessRepo;
 import mg.data.entities.IngredientEntity;

@@ -21,21 +21,21 @@ import mg.data.entities.RecipeEntity;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
-@Entity(name="recipe_ingredient")
+//@EqualsAndHashCode
+//@Entity(name="recipe_ingredient")
 public class RecipeIngredient {
 	@EmbeddedId
 	private RecipeIngredientId id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("recipeId")
-	@JoinColumn(name = "recipe_id")
-	private RecipeEntity recipe;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("ingredientId")
-    @JoinColumn(name = "ingredient_id")
-	private IngredientEntity ingredient;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@MapsId("recipeId")
+//	@JoinColumn(name = "recipe_id")
+//	private RecipeEntity recipe;
+//
+//	@ManyToOne(fetch = FetchType.LAZY)
+//    @MapsId("ingredientId")
+//    @JoinColumn(name = "ingredient_id")
+//	private IngredientEntity ingredient;
 
 	
 }

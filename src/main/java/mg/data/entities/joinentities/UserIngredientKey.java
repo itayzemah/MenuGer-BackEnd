@@ -26,6 +26,6 @@ public class UserIngredientKey implements Serializable {
 	@Column(name = "user_email")
 	private @NonNull String useremail;
     
-	@Column(name = "ingredient_id")
+//	@Column(name = "ingredient_id")
 	private @NonNull Long ingredientId;
 }

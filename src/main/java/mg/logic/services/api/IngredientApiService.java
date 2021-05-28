@@ -91,12 +91,13 @@ public class IngredientApiService implements IngredientService {
 	@Override
 	public Response<IngredientBoundary> findById(Long ingredientId) {
 		Response<IngredientBoundary> retval = new Response<IngredientBoundary>();
-		String search = "/" + ingredientId + "/substitutes";
-
-		HttpResponse<String> response = httpCall(baseUrl + ingredientUrl + search);
+		String search = "/" + ingredientId + "/information";
+		String fullUrl = baseUrl + ingredientUrl + search;
 		
+		HttpResponse<String> response = httpCall(fullUrl);
 		String body = response.getBody();
-		System.err.println(body);
+		
+		System.out.println(body);
 
 		if (response.getStatus() != 200) {
 			retval.setMessage("Bad request with url: " + baseUrl + ingredientUrl + search);

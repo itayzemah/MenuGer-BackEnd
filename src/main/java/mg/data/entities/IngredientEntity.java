@@ -31,8 +31,8 @@ import mg.data.entities.joinentities.UserIngredient;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity
-@Table(name= "INGREDIENTS",uniqueConstraints= {@UniqueConstraint(columnNames = {"name"})})
+//@Entity
+//@Table(name= "INGREDIENTS",uniqueConstraints= {@UniqueConstraint(columnNames = {"name"})})
 public class IngredientEntity {
    
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,9 +41,9 @@ public class IngredientEntity {
     private String name;
     private String image;
     
-    @OneToMany( mappedBy = "id.ingredientId",fetch = FetchType.LAZY)
-    private Set<UserIngredient> userIngredients;
-    
-    @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
-	 private Set<RecipeIngredient> recipeIngredients;
+//    @OneToMany( mappedBy = "id.ingredientId",fetch = FetchType.LAZY)
+//    private Set<UserIngredient> userIngredients;
+//    
+//    @OneToMany(mappedBy = "recipe",fetch = FetchType.LAZY)
+//	 private Set<RecipeIngredient> recipeIngredients;
 }

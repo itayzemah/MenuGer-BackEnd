@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import mg.boundaries.RecipeBoundary;
 import mg.data.dal.MenuDataAccessLayer;
 import mg.data.dal.MenuRecipeDataAccessRepo;
-import mg.data.dal.RecipeDataAccessLayerRepo;
 import mg.data.entities.joinentities.MenuRecipe;
 import mg.data.entities.joinentities.MenuRecipeId;
 import mg.logic.MenuRecipeService;
@@ -23,7 +22,6 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 	private RecipeService recipeService;
 	private MenuRecipeDataAccessRepo menuRecipeDAL;
 	private MenuDataAccessLayer menuDAL;
-	private RecipeDataAccessLayerRepo recipeDAL;
 	
 	@Override
 	public List<RecipeBoundary> getAllForMenu(long menuId) {

@@ -27,8 +27,8 @@ import mg.data.entities.joinentities.RecipeIngredient;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Entity
-@Table(name = "RECIPES")
+//@Entity
+//@Table(name = "RECIPES")
 public class RecipeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
@@ -38,9 +38,9 @@ public class RecipeEntity {
 	private String instructions;
 	private String createdBy;
 	private String image;
-	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
-	private Set<RecipeIngredient> recipeIngredients;
-	
+//	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+//	private Set<RecipeIngredient> recipeIngredients;
+//	
 	@OneToMany(mappedBy = "menu", fetch = FetchType.LAZY)
 	private Set<MenuRecipe> menuRecipe;
 

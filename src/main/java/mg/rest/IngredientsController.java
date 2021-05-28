@@ -29,13 +29,13 @@ import mg.logic.IngredientService;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class IngredientsController {
 	private IngredientService ingredientService;
-//	
-//	@RequestMapping
-//	(path="id/{id}", method = RequestMethod.GET,
-//	produces = MediaType.APPLICATION_JSON_VALUE)
-//	public Response<IngredientBoundary> findById(@PathVariable("id") long ingredientId){
-//		return ingredientService.findById(ingredientId);
-//	}
+	
+	@RequestMapping
+	(path="id/{id}", method = RequestMethod.GET,
+	produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<IngredientBoundary> findById(@PathVariable("id") long ingredientId){
+		return ingredientService.findById(ingredientId);
+	}
 
 	@RequestMapping
 	(path="name/{name}", method = RequestMethod.GET,
