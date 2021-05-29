@@ -160,24 +160,25 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	@Override
 	public UserIngredient getOne(String user, Long ingredientId) {
 		return this.userIngreDAL.findById(new UserIngredientKey(user, ingredientId))
-				.orElseThrow(() -> new RuntimeException("Not Found"));
-
+				.orElse(new UserIngredient(new UserIngredientKey(user, ingredientId), IngredientTypeEnum.PREFERRED.name(), 0.0));
+			
 	}
 
 	@Override
 	public double goodScore(String userEmail, Long ingredientId) {
-		return changeRate(userEmail, ingredientId, -0.5);
+		return changeRate(userEmail, ingredientId, 0.5);
 	}
 
 	@Override
 	public double badScore(String userEmail, Long ingredientId) {
-		return changeRate(userEmail, ingredientId, 0.5);
+		return changeRate(userEmail, ingredientId, -0.5);
 
 	}
 
 	private double changeRate(String userEmail, Long ingredientId, double delta) {
 		UserIngredient userIngredient = this.getOne(userEmail, ingredientId);
 		userIngredient.setRate(userIngredient.getRate() + delta);
+		this.userIngreDAL.save(userIngredient);
 		return userIngredient.getRate();
 	}
 

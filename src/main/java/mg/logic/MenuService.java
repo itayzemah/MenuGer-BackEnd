@@ -7,7 +7,7 @@ import mg.boundaries.helper.MenuFeedbackEnum;
 
 public interface MenuService {
 
-	public MenuBoundary createMenu(String userEmail, int days);
+//	public MenuBoundary createMenu(String userEmail, int days);
 
 	public MenuBoundary buildMenu(String userEmail, Long[] recipeId);
 

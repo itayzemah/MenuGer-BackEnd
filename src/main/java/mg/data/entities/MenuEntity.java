@@ -3,11 +3,14 @@ package mg.data.entities;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,19 +29,20 @@ import mg.data.entities.joinentities.MenuRecipe;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name= "MENUS")
+@Table(name = "MENUS")
 public class MenuEntity {
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private Long id;
-	
+	@Id
+	private Long id;
+
 	private Date timestamp;
 	private short numOfErrors;
-	private String userEmail;
 	
-	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+	private String userEmail;
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "id")
 	private Set<MenuRecipe> menuRecipes;
 
-   
-    
 }

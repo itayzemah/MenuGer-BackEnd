@@ -33,13 +33,13 @@ public class MenuRecipe {
 //	@ManyToOne(fetch = FetchType.LAZY)
 //	//@MapsId("recipeId")
 //	@JoinColumn(name = "recipe_id")
-	private Long recipe;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("menuId")
-    @JoinColumn(name = "menu_id")
-	private MenuEntity menu;
-	
-	private Boolean match;
+//	private Long recipe;
+//
+//	@ManyToOne(fetch = FetchType.LAZY)
+//    @MapsId("menuId")
+//    @JoinColumn(name = "menu_id")
+//	private MenuEntity menu;
+//	
+//	private Boolean match;
 
 }

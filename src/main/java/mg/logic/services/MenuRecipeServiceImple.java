@@ -13,6 +13,7 @@ import mg.data.dal.MenuRecipeDataAccessRepo;
 import mg.data.entities.joinentities.MenuRecipe;
 import mg.data.entities.joinentities.MenuRecipeId;
 import mg.logic.MenuRecipeService;
+import mg.logic.MenuService;
 import mg.logic.RecipeService;
 import mg.logic.exceptions.MenuRecipeNotFound;
 
@@ -21,21 +22,20 @@ import mg.logic.exceptions.MenuRecipeNotFound;
 public class MenuRecipeServiceImple implements MenuRecipeService{
 	private RecipeService recipeService;
 	private MenuRecipeDataAccessRepo menuRecipeDAL;
-	private MenuDataAccessLayer menuDAL;
 	
 	@Override
 	public List<RecipeBoundary> getAllForMenu(long menuId) {
-		return menuRecipeDAL.findAllByMenu_id(menuId)
+		return menuRecipeDAL.findAllById_MenuId(menuId)
 				.stream()
-				.map(mr -> this.recipeService.getById(mr.getRecipe()))
+				.map(mr -> this.recipeService.getById(mr.getId().getRecipeId()))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public MenuRecipe create(long menuId, long recipeId) {
 		MenuRecipe mr = new MenuRecipe();
-		mr.setMenu(this.menuDAL.findById(menuId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
-		mr.setRecipe(recipeId);
+//		mr.setMenu(this.menuDAL.findById(menuId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
+//		mr.setRecipe(recipeId);
 		mr.setId(new MenuRecipeId(recipeId, menuId));
 		return menuRecipeDAL.save(mr);
 	}

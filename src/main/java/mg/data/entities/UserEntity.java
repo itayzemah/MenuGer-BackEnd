@@ -35,5 +35,7 @@ public class UserEntity {
 	@JoinColumn(name="email")
 	private Set<UserIngredient> userIngredients;
 	
-
+	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@JoinColumn(name="email")
+	private Set<MenuEntity> userMenus;
 }

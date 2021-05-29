@@ -35,6 +35,7 @@ import mg.logic.MenuRecipeService;
 import mg.logic.MenuService;
 import mg.logic.RecipeService;
 import mg.logic.UserIngredientService;
+import mg.logic.UserService;
 import mg.logic.exceptions.MenuNotFoundExcetion;
 
 @Service
@@ -48,23 +49,22 @@ public class MenuServiceImple implements MenuService {
 	private MenuRecipeService menuRecipeService;
 	private MenuConverter menuConverter;
 
-	@Override
 	@Transactional
 	public MenuBoundary createMenu(String userEmail, int numOfRecipes) {
 		// create menu in DB
 		MenuEntity menu = new MenuEntity();
 		menu.setTimestamp(new Date());
-		menu.setUserEmail(userEmail);
-		
-		//get menu id
+
+		// get menu id
 		menu = menuDAL.save(menu);
-		
+
 		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
 		// get All user FORBIDDEN ingredients
-		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(Arrays.asList(allForbiddenIngredients))
-				.stream().map(this.ingredientConverter::fromBoundary).collect(Collectors.toList());
+		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(
+				Arrays.asList(allForbiddenIngredients)).stream().map(this.ingredientConverter::fromBoundary)
+						.collect(Collectors.toList());
 		// get All user PREFERRED ingredients
 		// TODO change to get user ingredients
 		List<UserIngredient> preferredUserIngredients = userIngrdientsService
@@ -94,9 +94,9 @@ public class MenuServiceImple implements MenuService {
 	private List<RecipeWithRate> getListOfRatedRecipes(List<UserIngredient> preferredUserIngredients,
 			List<RecipeBoundary> allAllowRecipes) {
 		ArrayList<RecipeWithRate> rv = new ArrayList<RecipeWithRate>();
-		
+
 		allAllowRecipes.forEach(recipe -> rv.add(calcRate(recipe, preferredUserIngredients)));
-		
+
 		return rv;
 	}
 
@@ -126,7 +126,7 @@ public class MenuServiceImple implements MenuService {
 		}
 //		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
-
+		recipes.forEach(r -> this.recipeService.feedbackRecipe(r.getId(), userEmail, MenuFeedbackEnum.GOOD));
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);
 		rv.setRecipes(this.menuRecipeService.getAllForMenu(menu.getId()));
 		return rv;
@@ -144,13 +144,10 @@ public class MenuServiceImple implements MenuService {
 		return lst.toArray(new MenuBoundary[0]);
 	}
 
-	
-
-
 	@Override
 	public MenuBoundary[] getAllForUser(String userEmail, int page, int size) {
 		List<MenuBoundary> entities = this.menuDAL.findAllByUserEmail(userEmail, PageRequest.of(page, size)).stream()
 				.map(this.menuConverter::toBoundary).collect(Collectors.toList());
-		 return linkRecipesAndConvertToArr(entities);
+		return linkRecipesAndConvertToArr(entities);
 	}
 }
