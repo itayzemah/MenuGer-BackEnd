@@ -6,11 +6,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -23,7 +23,6 @@ import mg.data.entities.joinentities.UserIngredient;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 @Table(name = "USERS")
 @Entity
 public class UserEntity {
@@ -32,7 +31,8 @@ public class UserEntity {
 	private String gender;
 	private boolean isActive;
 	
-	@OneToMany(mappedBy = "user",cascade =  {CascadeType.ALL}, fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@JoinColumn(name="email")
 	private Set<UserIngredient> userIngredients;
 	
 

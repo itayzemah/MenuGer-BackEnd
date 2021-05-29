@@ -50,6 +50,8 @@ public class IngredientApiService implements IngredientService {
 
 	private HttpResponse<String> httpCall(String fullUrl) {
 		HttpResponse<String> response = null;
+		System.err.println(fullUrl);
+		
 		try {
 			response = Unirest.get(fullUrl).header("x-rapidapi-key", rapidapiKey)
 					.header("x-rapidapi-host", rapidapiHost).asString();

@@ -82,8 +82,8 @@ public class RecipeApiService implements RecipeService {
 	@Override
 	public Response<RecipeBoundary[]> getByTitle(String name, int page, int size) {
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
-		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset=" + page * size + "&number="
-				+ size;
+		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset="
+				+ page * size + "&number=" + size;
 
 		String body = "";
 		HttpResponse<String> response = httpCall(search);
@@ -116,9 +116,41 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	@Override
-	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr) {
+	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> forbiddenIngredients) {
 		List<RecipeBoundary> retval = new ArrayList<RecipeBoundary>();
+		StringBuilder excludeIngredientsSB = new StringBuilder();
+		for (int j = 0; j < forbiddenIngredients.size() -1; j++) {
+			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());	
+			excludeIngredientsSB.append(",");	
+		}
+		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() -1).getName());
+		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&number=500&excludeIngredients=" +
+		forbiddenIngredients.stream().map(i -> i.getName()+",");
 
+		String body = "";
+		HttpResponse<String> response = httpCall(search);
+		body = response.getBody();
+		System.err.println(body);
+
+		if (response.getStatus() != 200) {
+			throw new RecipeNotFoundException("Bad request with url: " + baseUrl + recipeUrl + search);
+
+		} else {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				JsonNode jsonNode = mapper.readTree(response.getBody());
+				String resultsJson = jsonNode.path("results").toString();
+				retval = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
+				});
+				retval = retval.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList());
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Error parsing " + response.getBody());
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Error parsing " + response.getBody());
+			}
+		}
 		return retval;
 	}
 
@@ -152,7 +184,8 @@ public class RecipeApiService implements RecipeService {
 		return retval;
 	}
 
-	private void SetIngredients(RecipeBoundary recipe, JsonNode extendedIngredients) throws JsonMappingException, JsonProcessingException {
+	private void SetIngredients(RecipeBoundary recipe, JsonNode extendedIngredients)
+			throws JsonMappingException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayList<IngredientBoundary> ingredients = new ArrayList<>();
 		if (extendedIngredients.isArray()) {
@@ -165,6 +198,7 @@ public class RecipeApiService implements RecipeService {
 
 	private HttpResponse<String> httpCall(String search) {
 		HttpResponse<String> response = null;
+		System.err.println(baseUrl + recipeUrl + search);
 		try {
 			response = Unirest.get(baseUrl + recipeUrl + search).header("x-rapidapi-key", rapidapiKey)
 					.header("x-rapidapi-host", rapidapiHost).asString();

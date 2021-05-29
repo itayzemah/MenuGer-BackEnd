@@ -37,29 +37,36 @@ import mg.logic.exceptions.UserNotFoundException;
 public class UserIngredientServiceImple implements UserIngredientService {
 	private UserDataAccessRepo userDAL;
 //	private IngredientDataAccessRepo ingreDAL;
-	private	IngredientService ingredientService;
+	private IngredientService ingredientService;
 	private UserIngredientDataAccessRepo userIngreDAL;
 
 	@Override
 	public UserIngredient update(String userEmail, Long ingredientId, String type, Double rate) {
 		Response<IngredientBoundary> ingredientRes = this.ingredientService.findById(ingredientId);
-		if(!ingredientRes.getSuccess()) {
-			throw  new IngredientNotFoundException("Ingredient " + ingredientId + " not found");
+		if (!ingredientRes.getSuccess()) {
+			throw new IngredientNotFoundException(ingredientRes.getMessage());
+//			throw  new IngredientNotFoundException("Ingredient " + ingredientId + " not found");
 		}
 
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
-
+		if (rate != null && (rate > 10 || rate < 0)) {
+			throw new RuntimeException("rate out of range 0-10");
+		}
+		userEntity.setUserIngredients(
+				new HashSet<UserIngredient>(this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(0, 1000))));
 		UserIngredient userIngredient = new UserIngredient();
 //		userIngredient.setIngredientId(ingredientRes.getData().getId());
-		userIngredient.setUser(userEntity);
+//		userIngredient.setUser(userEntity);
 		userIngredient.setType(type);
-		userIngredient.setRate(rate);
-
+		userIngredient.setRate(type.equals(IngredientTypeEnum.PREFERRED.name()) ? rate : null);
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingredientRes.getData().getId());
 		userIngredient.setId(key);
-
+		//this.userIngreDAL.save(userIngredient);
+		//userEntity.getUserIngredients().add(userIngredient);
+		//this.userDAL.save(userEntity);
 		return this.userIngreDAL.save(userIngredient);
+
 	}
 
 	@Override
@@ -71,9 +78,9 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			return rv;
 		}
 
-		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
+		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(userEmail, type,
 				PageRequest.of(page, size));
-		rv.setData(lst.stream().map((ui) -> ui.getId().getIngredientId())//.map(this.ingredientConverter::toBoundary)
+		rv.setData(lst.stream().map((ui) -> this.ingredientService.findById(ui.getId().getIngredientId()).getData())// .map(this.ingredientConverter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
 		return rv;
 	}
@@ -88,7 +95,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			return rv;
 		}
 
-		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_EmailAndType(userEmail, type,
+		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(userEmail, type,
 				PageRequest.of(page, size));
 		rv.setData(lst);
 		return rv;
@@ -98,8 +105,8 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	public Response<Map<String, IngredientBoundary[]>> getAll(String userEmail, int size, int page) {
 		Response<Map<String, IngredientBoundary[]>> rv = new Response<Map<String, IngredientBoundary[]>>();
 		Map<String, IngredientBoundary[]> map = new HashMap<String, IngredientBoundary[]>();
-		
-		List<UserIngredient> lst = this.userIngreDAL.findAllByUser_Email(userEmail, PageRequest.of(page, size));
+
+		List<UserIngredient> lst = this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(page, size));
 
 		List<IngredientBoundary> lstF = new ArrayList<>();
 		List<IngredientBoundary> lstP = new ArrayList<>();
@@ -123,7 +130,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	@Transactional
 	public void update(String userEmail, Long[] ingredients, String type) {
 		ArrayList<Long> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
-		List<UserIngredient> removedUI = this.userIngreDAL.deleteByUser_EmailAndType(userEmail, type);
+		List<UserIngredient> removedUI = this.userIngreDAL.deleteByTypeAndId_UserEmail(userEmail, type);
 
 		if (type == IngredientTypeEnum.PREFERRED.name()) {
 			for (UserIngredient userIngredient : removedUI) {
