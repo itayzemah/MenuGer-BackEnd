@@ -78,7 +78,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			return rv;
 		}
 
-		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(userEmail, type,
+		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail( type,userEmail,
 				PageRequest.of(page, size));
 		rv.setData(lst.stream().map((ui) -> this.ingredientService.findById(ui.getId().getIngredientId()).getData())// .map(this.ingredientConverter::toBoundary)
 				.collect(Collectors.toList()).toArray(new IngredientBoundary[0]));
