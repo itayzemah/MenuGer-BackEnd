@@ -1,5 +1,6 @@
 package mg.rest;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class UserIngredientController {
 
 	
 	@RequestMapping(path = "by/type/{userEmail}", method = RequestMethod.GET)
-	public Response<IngredientBoundary[]> getAllIngreOfUserByType(
+	public Response<List<IngredientBoundary>> getAllIngreOfUserByType(
 			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = false, defaultValue = "") IngredientTypeEnum type,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,

@@ -29,14 +29,14 @@ public class RecipeController {
 		return this.recipeService.create(recipe);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path="/{userEmail}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getAll(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "40") int size) {
 		return this.recipeService.getAll(userEmail, page, size);
 	}
 
-	@RequestMapping(path = "/by/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/by/name/{userEmail}/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<RecipeBoundary[]> getByName(@PathVariable("userEmail") String userEmail,
 			@PathVariable("name") String name,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -51,9 +51,8 @@ public class RecipeController {
 
 	@RequestMapping(path = "/bests/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RecipeBoundary[] getAllBestRecipes(@PathVariable("userEmail") String userEmail,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "20") int size) {
-		return this.recipeService.getAllBestRecipesForUser(userEmail);
+			@RequestParam(name = "count", required = false, defaultValue = "20") int count) {
+		return this.recipeService.getBestRecipesForUser(userEmail,count);
 	}
 
 	@RequestMapping(path = "/feedback/{userEmail}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

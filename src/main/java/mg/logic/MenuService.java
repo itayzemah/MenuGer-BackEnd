@@ -3,7 +3,6 @@ package mg.logic;
 import java.util.Date;
 
 import mg.boundaries.MenuBoundary;
-import mg.boundaries.helper.MenuFeedbackEnum;
 
 public interface MenuService {
 

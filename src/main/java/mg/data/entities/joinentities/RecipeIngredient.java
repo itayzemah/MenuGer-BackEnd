@@ -1,20 +1,12 @@
 package mg.data.entities.joinentities;
 
 import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mg.data.entities.IngredientEntity;
-import mg.data.entities.RecipeEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor

@@ -15,11 +15,11 @@ public interface RecipeService {
 
 	public Response<RecipeBoundary[]> getByTitle(String userEmail, String name, int page, int size);
 
-	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr);
+	public List<RecipeBoundary> getRecipesWithIngredientNotIn(List<IngredientEntity> uiArr,int count);
 
 	public RecipeBoundary getById(Long rId);
 
-	public RecipeBoundary[] getAllBestRecipesForUser(String userEmail);
+	public RecipeBoundary[] getBestRecipesForUser(String userEmail, int count);
 
 	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback);
 

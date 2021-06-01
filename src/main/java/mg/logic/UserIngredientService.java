@@ -11,7 +11,7 @@ public interface UserIngredientService {
 
 	public UserIngredient update(String userEmail, Long ingredientId,String type,Double weight);
 
-	public Response<IngredientBoundary[]> getAllByType(String userEmail, String type, int size, int page);
+	public Response<List<IngredientBoundary>> getAllByType(String userEmail, String type, int size, int page);
 
 	public void update(String userEmail, Long[] ingredients, String type);
 

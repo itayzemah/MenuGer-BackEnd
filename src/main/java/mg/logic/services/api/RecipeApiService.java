@@ -1,30 +1,23 @@
 package mg.logic.services.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.RecipeBoundary;
@@ -34,13 +27,9 @@ import mg.boundaries.helper.RecipeWithRate;
 import mg.data.converters.IngredientConverter;
 import mg.data.entities.IngredientEntity;
 import mg.data.entities.IngredientTypeEnum;
-import mg.data.entities.MenuEntity;
-import mg.data.entities.joinentities.MenuRecipe;
 import mg.data.entities.joinentities.UserIngredient;
-import mg.logic.RecipeIngredientService;
 import mg.logic.RecipeService;
 import mg.logic.UserIngredientService;
-import mg.logic.exceptions.MenuNotFoundExcetion;
 import mg.logic.exceptions.RecipeNotFoundException;
 
 @Service
@@ -58,18 +47,20 @@ public class RecipeApiService implements RecipeService {
 	@Value("${x-rapidapi-host}")
 	private String rapidapiHost;
 	private IngredientConverter ingredientConverter;
+	private ObjectMapper mapper;
 
 	@Autowired
 	public RecipeApiService(UserIngredientService userIngrdientsService, IngredientConverter ingredientConverter) {
 		this.userIngrdientsService = userIngrdientsService;
 		this.ingredientConverter = ingredientConverter;
+		mapper = new ObjectMapper();
 	}
 
 	@Override
 	public Response<RecipeBoundary[]> getAll(String userEmail, int page, int size) {
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
-		this.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients);
-		return this.getByTitle(userEmail,"", page, size);
+		this.getRecipesWithIngredientNotIn(forbiddenUserIngredients, size);
+		return this.getByTitle(userEmail, "", page, size);
 	}
 
 	@Override
@@ -78,8 +69,9 @@ public class RecipeApiService implements RecipeService {
 
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
 		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset="
-				+ page * size + "&number=" + size+"&excludeIngredients=" +
-				forbiddenUserIngredients.stream().map(i -> i.getName()+",");;
+				+ page * size + "&number=" + size + "&excludeIngredients="
+				+ forbiddenUserIngredients.stream().map(i -> i.getName() + ",");
+		;
 
 		String body = "";
 		HttpResponse<String> response = httpCall(search);
@@ -90,64 +82,75 @@ public class RecipeApiService implements RecipeService {
 			retval.setMessage("Bad request with url: " + baseUrl + recipeUrl + search);
 			retval.setSuccess(false);
 		} else {
-			ObjectMapper mapper = new ObjectMapper();
 			RecipeBoundary[] values = null;
-			try {
-				JsonNode jsonNode = mapper.readTree(response.getBody());
-				String resultsJson = jsonNode.path("results").toString();
-				List<RecipeBoundary> results = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
-				});
-				values = results.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList())
-						.toArray(new RecipeBoundary[0]);
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			}
+
+			List<RecipeBoundary> results = extractListOfRecipes(body);
+
+//			values = results.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
+			values = results.toArray(new RecipeBoundary[0]);
 			retval.setData(values);
 		}
 		return retval;
 	}
 
 	@Override
-	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> forbiddenIngredients) {
+	public List<RecipeBoundary> getRecipesWithIngredientNotIn(List<IngredientEntity> forbiddenIngredients, int count) {
 		List<RecipeBoundary> retval = new ArrayList<RecipeBoundary>();
 		StringBuilder excludeIngredientsSB = new StringBuilder();
-		for (int j = 0; j < forbiddenIngredients.size() -1; j++) {
-			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());	
-			excludeIngredientsSB.append(",");	
-		}
-		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() -1).getName());
-		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&number=60&excludeIngredients=" +
-		forbiddenIngredients.stream().map(i -> i.getName()+",");
 
-		String body = "";
+		for (int j = 0; j < forbiddenIngredients.size() - 1; j++) {
+			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());
+			excludeIngredientsSB.append(",");
+		}
+		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() - 1).getName());
+		String excludeListString = "";
+		try {
+			excludeListString = URLEncoder.encode(excludeIngredientsSB.toString(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String search = "/complexSearch?addRecipeInformation=true&fillIngredients=true&instructionsRequired=true&number="
+				+ count + "&excludeIngredients=" + excludeListString;
+
 		HttpResponse<String> response = httpCall(search);
-		body = response.getBody();
+		String body = response.getBody();
 		System.err.println(body);
 
 		if (response.getStatus() != 200) {
 			throw new RecipeNotFoundException("Bad request with url: " + baseUrl + recipeUrl + search);
 
 		} else {
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				JsonNode jsonNode = mapper.readTree(response.getBody());
-				String resultsJson = jsonNode.path("results").toString();
-				retval = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
-				});
-				retval = retval.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList());
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error parsing " + response.getBody());
-			}
+			retval = extractListOfRecipes(body);
+
 		}
 		return retval;
+	}
+
+	private List<RecipeBoundary> extractListOfRecipes(String responseBody) {
+		List<RecipeBoundary> retval =new ArrayList<RecipeBoundary>();
+		try {
+			JsonNode jsonNode = mapper.readTree(responseBody);
+			JsonNode resultsJson = jsonNode.path("results");
+			
+			if (resultsJson.isArray()) {
+				for (final JsonNode objNode : resultsJson) {
+					RecipeBoundary r = this.mapper.readValue(objNode.toString(),RecipeBoundary.class);
+					r.setCreatedBy(objNode.path("creditsText").toString().replace("\"", ""));
+					this.SetIngredients(r, objNode.path("extendedIngredients"));
+					retval.add(r);
+				}
+			}
+			return retval;
+//			List<RecipeBoundary> retval = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
+//			});
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error parsing " + responseBody);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error parsing " + responseBody);
+		}
 	}
 
 	@Override
@@ -163,7 +166,6 @@ public class RecipeApiService implements RecipeService {
 		if (response.getStatus() != 200) {
 			throw new RecipeNotFoundException("Bad request with url: " + baseUrl + recipeUrl + search);
 		} else {
-			ObjectMapper mapper = new ObjectMapper();
 			try {
 				retval = mapper.readValue(response.getBody(), RecipeBoundary.class);
 				JsonNode jsonNode = mapper.readTree(response.getBody());
@@ -180,13 +182,16 @@ public class RecipeApiService implements RecipeService {
 		return retval;
 	}
 
-	private void SetIngredients(RecipeBoundary recipe, JsonNode extendedIngredients)
-			throws JsonMappingException, JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
+	private void SetIngredients(RecipeBoundary recipe, JsonNode extendedIngredients) {
 		ArrayList<IngredientBoundary> ingredients = new ArrayList<>();
 		if (extendedIngredients.isArray()) {
 			for (final JsonNode objNode : extendedIngredients) {
-				ingredients.add(mapper.readValue(objNode.toString(), IngredientBoundary.class));
+				try {
+					ingredients.add(mapper.readValue(objNode.toString(), IngredientBoundary.class));
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		recipe.setIngredients(ingredients.toArray(new IngredientBoundary[0]));
@@ -212,7 +217,7 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	@Override
-	public RecipeBoundary[] getAllBestRecipesForUser(String userEmail) {
+	public RecipeBoundary[] getBestRecipesForUser(String userEmail, int count) {
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 		// get All user PREFERRED ingredients
 		List<UserIngredient> preferredUserIngredients = userIngrdientsService
@@ -220,20 +225,19 @@ public class RecipeApiService implements RecipeService {
 
 		// get all appropriate recipes
 		List<RecipeWithRate> recipesWithRate = getListOfRatedRecipes(preferredUserIngredients,
-				this.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients));
+				this.getRecipesWithIngredientNotIn(forbiddenUserIngredients, count));
 
 		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
 		return recipesWithRate.toArray(new RecipeWithRate[0]);
 	}
 
 	private List<IngredientEntity> getUserForbiddenIndredients(String userEmail) {
-		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
+		List<IngredientBoundary> allForbiddenIngredients = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
 		// get All user FORBIDDEN ingredients
-		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(
-				Arrays.asList(allForbiddenIngredients)).stream().map(this.ingredientConverter::fromBoundary)
-						.collect(Collectors.toList());
+		List<IngredientEntity> forbiddenUserIngredients = allForbiddenIngredients.stream()
+				.map(this.ingredientConverter::fromBoundary).collect(Collectors.toList());
 		return forbiddenUserIngredients;
 	}
 
