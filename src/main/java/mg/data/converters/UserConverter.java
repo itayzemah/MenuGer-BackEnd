@@ -15,6 +15,7 @@ public class UserConverter {
 		rv.setEmail(boundary.getEmail());
 		rv.setFullName(boundary.getFullName());
 		rv.setGender(boundary.getGender());
+		rv.setActive(true);
 		return rv;
 	}
 	
