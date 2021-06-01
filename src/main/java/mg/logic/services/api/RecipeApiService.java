@@ -67,16 +67,7 @@ public class RecipeApiService implements RecipeService {
 
 	@Override
 	public Response<RecipeBoundary[]> getAll(int page, int size) {
-		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
-		/*
-		 * HttpResponse<String> response = Unirest.get(
-		 * "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?number=30&excludeIngredients=peanuts")
-		 * .header("x-rapidapi-key",
-		 * "65bc01e644msh253ff15fa2688c0p1fe83djsn741ff5c1ded8")
-		 * .header("x-rapidapi-host",
-		 * "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com") .asString();
-		 */
-		return retval;
+		return this.getByTitle("", 0, 100);
 	}
 
 	@Override
