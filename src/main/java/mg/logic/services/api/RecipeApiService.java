@@ -66,15 +66,20 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	@Override
-	public Response<RecipeBoundary[]> getAll(int page, int size) {
-		return this.getByTitle("", 0, 100);
+	public Response<RecipeBoundary[]> getAll(String userEmail, int page, int size) {
+		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
+		this.getAllRecipesWithIngredientNotIn(forbiddenUserIngredients);
+		return this.getByTitle(userEmail,"", page, size);
 	}
 
 	@Override
-	public Response<RecipeBoundary[]> getByTitle(String name, int page, int size) {
+	public Response<RecipeBoundary[]> getByTitle(String userEmail, String name, int page, int size) {
+		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
+
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
 		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset="
-				+ page * size + "&number=" + size;
+				+ page * size + "&number=" + size+"&excludeIngredients=" +
+				forbiddenUserIngredients.stream().map(i -> i.getName()+",");;
 
 		String body = "";
 		HttpResponse<String> response = httpCall(search);
@@ -115,7 +120,7 @@ public class RecipeApiService implements RecipeService {
 			excludeIngredientsSB.append(",");	
 		}
 		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() -1).getName());
-		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&number=500&excludeIngredients=" +
+		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&number=60&excludeIngredients=" +
 		forbiddenIngredients.stream().map(i -> i.getName()+",");
 
 		String body = "";
@@ -208,15 +213,8 @@ public class RecipeApiService implements RecipeService {
 
 	@Override
 	public RecipeBoundary[] getAllBestRecipesForUser(String userEmail) {
-		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
-				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
-
-		// get All user FORBIDDEN ingredients
-		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(
-				Arrays.asList(allForbiddenIngredients)).stream().map(this.ingredientConverter::fromBoundary)
-						.collect(Collectors.toList());
+		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 		// get All user PREFERRED ingredients
-		// TODO change to get user ingredients
 		List<UserIngredient> preferredUserIngredients = userIngrdientsService
 				.getAllUserIngredientByType(userEmail, IngredientTypeEnum.PREFERRED.name(), 1000, 0).getData();
 
@@ -226,6 +224,17 @@ public class RecipeApiService implements RecipeService {
 
 		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());
 		return recipesWithRate.toArray(new RecipeWithRate[0]);
+	}
+
+	private List<IngredientEntity> getUserForbiddenIndredients(String userEmail) {
+		IngredientBoundary[] allForbiddenIngredients = userIngrdientsService
+				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
+
+		// get All user FORBIDDEN ingredients
+		List<IngredientEntity> forbiddenUserIngredients = new ArrayList<IngredientBoundary>(
+				Arrays.asList(allForbiddenIngredients)).stream().map(this.ingredientConverter::fromBoundary)
+						.collect(Collectors.toList());
+		return forbiddenUserIngredients;
 	}
 
 	@Override

@@ -11,9 +11,9 @@ public interface RecipeService {
 
 	public Response<RecipeBoundary> create(RecipeBoundary recipe);
 
-	public Response<RecipeBoundary[]> getAll(int page, int size);
+	public Response<RecipeBoundary[]> getAll(String userEmail, int page, int size);
 
-	public Response<RecipeBoundary[]> getByTitle(String name, int page, int size);
+	public Response<RecipeBoundary[]> getByTitle(String userEmail, String name, int page, int size);
 
 	public List<RecipeBoundary> getAllRecipesWithIngredientNotIn(List<IngredientEntity> uiArr);
 
