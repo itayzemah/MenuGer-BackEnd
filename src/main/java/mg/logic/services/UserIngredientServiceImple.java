@@ -55,15 +55,11 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		userEntity.setUserIngredients(new HashSet<UserIngredient>(
 				this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(0, 1000))));
 		UserIngredient userIngredient = new UserIngredient();
-//		userIngredient.setIngredientId(ingredientRes.getData().getId());
 		userIngredient.setName(ingredientRes.getData().getName());
 		userIngredient.setType(type);
 		userIngredient.setRate(type.equals(IngredientTypeEnum.PREFERRED.name()) ? rate : null);
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingredientRes.getData().getId());
 		userIngredient.setId(key);
-		// this.userIngreDAL.save(userIngredient);
-		// userEntity.getUserIngredients().add(userIngredient);
-		// this.userDAL.save(userEntity);
 		return this.userIngreDAL.save(userIngredient);
 
 	}
@@ -135,7 +131,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	@Transactional
 	public void update(String userEmail, Long[] ingredients, String type) {
 		ArrayList<Long> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
-		List<UserIngredient> removedUI = this.userIngreDAL.deleteByTypeAndId_UserEmail(userEmail, type);
+		List<UserIngredient> removedUI = this.userIngreDAL.deleteByTypeAndId_UserEmail(type, userEmail);
 
 		if (type == IngredientTypeEnum.PREFERRED.name()) {
 			for (UserIngredient userIngredient : removedUI) {
