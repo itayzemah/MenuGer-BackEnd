@@ -142,8 +142,7 @@ public class RecipeApiService implements RecipeService {
 				}
 			}
 			return retval;
-//			List<RecipeBoundary> retval = mapper.readValue(resultsJson, new TypeReference<List<RecipeBoundary>>() {
-//			});
+
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Error parsing " + responseBody);

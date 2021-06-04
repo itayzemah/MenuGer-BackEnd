@@ -35,7 +35,6 @@ import mg.logic.exceptions.UserNotFoundException;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class UserIngredientServiceImple implements UserIngredientService {
 	private UserDataAccessRepo userDAL;
-//	private IngredientDataAccessRepo ingreDAL;
 	private IngredientService ingredientService;
 	private UserIngredientDataAccessRepo userIngreDAL;
 
@@ -44,7 +43,6 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		Response<IngredientBoundary> ingredientRes = this.ingredientService.findById(ingredientId);
 		if (!ingredientRes.getSuccess()) {
 			throw new IngredientNotFoundException(ingredientRes.getMessage());
-//			throw  new IngredientNotFoundException("Ingredient " + ingredientId + " not found");
 		}
 
 		UserEntity userEntity = this.userDAL.findById(userEmail)

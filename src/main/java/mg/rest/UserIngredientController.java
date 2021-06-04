@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
 import mg.data.entities.IngredientTypeEnum;
+import mg.data.entities.joinentities.UserIngredient;
 import mg.logic.UserIngredientService;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -52,6 +53,7 @@ public class UserIngredientController {
 			) {
 		return userIngreService.getAllByType(userEmail,type==null?"": type.toString(), size, page);
 	}
+	
 	@RequestMapping(path = "/{userEmail}", method = RequestMethod.GET)
 	public Response<Map<String, IngredientBoundary[]>> getAllIngreOfUser(
 			@PathVariable("userEmail") String userEmail,
@@ -59,5 +61,13 @@ public class UserIngredientController {
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
 			) {
 		return userIngreService.getAll(userEmail, size, page);
+	}
+	
+	@RequestMapping(path = "/{userEmail}", method = RequestMethod.DELETE)
+	public void removeUserIngredient(
+			@PathVariable("userEmail") String userEmail,
+			@RequestBody(required = true) Long[] ingredients
+			) {
+		userIngreService.unbind(userEmail, ingredients);
 	}
 }
