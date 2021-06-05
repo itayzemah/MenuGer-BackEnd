@@ -10,7 +10,7 @@ public interface UserService {
 
 	public Response<UserBoundary> create(UserBoundary user);
 
-	public Response<UserBoundary> unsubscribe(UserLoginBoundary user);
+	public Response<UserBoundary> unsubscribe(String userEmail);
 
 	public Response<UserBoundary> login(UserLoginBoundary user);
 

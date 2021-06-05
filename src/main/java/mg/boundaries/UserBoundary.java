@@ -17,9 +17,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
+
 public class UserBoundary {
 	private @NonNull @Id String email;
 	private String fullName;
 	private String gender;
-	private Map<Long,Double> userWeights;
 }

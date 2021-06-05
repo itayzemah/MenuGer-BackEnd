@@ -47,7 +47,7 @@ public class UserIngredientController {
 	@RequestMapping(path = "by/type/{userEmail}", method = RequestMethod.GET)
 	public Response<List<IngredientBoundary>> getAllIngreOfUserByType(
 			@PathVariable("userEmail") String userEmail,
-			@RequestParam(name = "type", required = false, defaultValue = "") IngredientTypeEnum type,
+			@RequestParam(name = "type", required = false, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size
 			) {

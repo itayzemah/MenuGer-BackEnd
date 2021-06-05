@@ -31,11 +31,11 @@ public class UserEntity {
 	private String gender;
 	private boolean isActive;
 	
-	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
-	@JoinColumn(name="email")
+	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.REMOVE)
+//	@JoinColumn(name="email")
 	private Set<UserIngredient> userIngredients;
 	
 	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
-	@JoinColumn(name="email")
+//	@JoinColumn(name="email")
 	private Set<MenuEntity> userMenus;
 }

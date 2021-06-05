@@ -46,10 +46,10 @@ public class UserController {
 	}
 	
 	@RequestMapping
-	(path="/unsubscribe", method = RequestMethod.DELETE,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Response<UserBoundary> unsubscribe(@RequestBody UserLoginBoundary user) {
-		return this.userService.unsubscribe(user);
+	(path="/{userEmail}", method = RequestMethod.DELETE,
+	 produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response<UserBoundary> unsubscribe(@PathVariable String userEmail) {
+		return this.userService.unsubscribe(userEmail);
 	} 
 	
 	@RequestMapping

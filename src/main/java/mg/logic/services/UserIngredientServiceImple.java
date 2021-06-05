@@ -47,7 +47,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
-
+		
 		if (rate != null && (rate > 10 || rate < 0)) {
 			throw new RuntimeException("rate out of range 0-10");
 		}
@@ -75,6 +75,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(type, userEmail,
 				PageRequest.of(page, size));
+		
 		rv.setData(lst.stream().map((ui) -> {
 			IngredientBoundary ingredient = new IngredientBoundary();
 			ingredient.setId(ui.getId().getIngredientId());

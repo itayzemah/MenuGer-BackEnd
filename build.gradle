@@ -34,7 +34,7 @@ dependencies {
 	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 	implementation group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
 	implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
-	implementation group: 'org.json', name: 'json', version: '20201115'
+	//implementation group: 'org.json', name: 'json', version: '20201115'
 	//runtimeOnly 'mysql:mysql-connector-java'
 
 	annotationProcessor 'org.projectlombok:lombok'
