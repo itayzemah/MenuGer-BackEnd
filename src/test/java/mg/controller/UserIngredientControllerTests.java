@@ -3,6 +3,8 @@ package mg.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -60,21 +62,24 @@ class UserIngredientControllerTests {
 
 	@Test
 	void test_Add_UserIngredients() {
+		// set preferred UserIngredient
 		String addingreURL = (userIngredientUrl + "/update/" + this.baseUser.getEmail() + "?type="
 				+ IngredientTypeEnum.PREFERRED.name());
 		Long[] ingreLst = new Long[] { (long) 1033, (long) 1056, (long) 1145, (long) 2047 };
 		this.restTemplate.put(addingreURL, ingreLst);
+		
+		// Get user ingredients
 		String getIngreURL = userIngredientUrl + "/by/type/" + this.baseUser.getEmail() + "?type="
 				+ IngredientTypeEnum.PREFERRED.name();
-		System.err.println("-------" + getIngreURL);
 		Response<List<IngredientBoundary>> res = this.restTemplate.exchange(getIngreURL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Response<List<IngredientBoundary>>>() {
 				}).getBody();
+		// check query success
 		assertThat(res.getSuccess());
+		
+		// check all ingredients submitted
 		IntStream.range(0, res.getData().size()).forEach(idx -> {
-			assertThat(res.getData().contains(ingreLst[idx]));
-			
+			assertThat(new ArrayList<Long>(Arrays.asList(ingreLst)).contains(res.getData().get(idx).getId()));
 		});
-		System.err.println("-------" +res);
 	}
 }

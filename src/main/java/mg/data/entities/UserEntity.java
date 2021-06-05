@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -30,12 +31,14 @@ public class UserEntity {
 	private String fullName;
 	private String gender;
 	private boolean isActive;
-	
-	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.REMOVE)
-//	@JoinColumn(name="email")
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "user_email")
+	@MapsId("id.user_email")
 	private Set<UserIngredient> userIngredients;
-	
-	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
-//	@JoinColumn(name="email")
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@MapsId("userEmail")
+	@JoinColumn(name = "userEmail")
 	private Set<MenuEntity> userMenus;
 }

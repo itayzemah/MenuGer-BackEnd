@@ -86,7 +86,6 @@ public class RecipeApiService implements RecipeService {
 
 			List<RecipeBoundary> results = extractListOfRecipes(body);
 
-//			values = results.stream().map(r -> this.getById(r.getId())).collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
 			values = results.toArray(new RecipeBoundary[0]);
 			retval.setData(values);
 		}
@@ -128,14 +127,14 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	private List<RecipeBoundary> extractListOfRecipes(String responseBody) {
-		List<RecipeBoundary> retval =new ArrayList<RecipeBoundary>();
+		List<RecipeBoundary> retval = new ArrayList<RecipeBoundary>();
 		try {
 			JsonNode jsonNode = mapper.readTree(responseBody);
 			JsonNode resultsJson = jsonNode.path("results");
-			
+
 			if (resultsJson.isArray()) {
 				for (final JsonNode objNode : resultsJson) {
-					RecipeBoundary r = this.mapper.readValue(objNode.toString(),RecipeBoundary.class);
+					RecipeBoundary r = this.mapper.readValue(objNode.toString(), RecipeBoundary.class);
 					r.setCreatedBy(objNode.path("creditsText").toString().replace("\"", ""));
 					this.SetIngredients(r, objNode.path("extendedIngredients"));
 					retval.add(r);
