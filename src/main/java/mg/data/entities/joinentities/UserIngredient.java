@@ -2,6 +2,8 @@ package mg.data.entities.joinentities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Entity(name="user_ingredient")
+@Entity
+@Table(name="user_ingredient")
 public class UserIngredient {
 
 	@EmbeddedId

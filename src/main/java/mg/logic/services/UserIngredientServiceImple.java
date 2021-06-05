@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -51,17 +52,18 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		if (rate != null && (rate > 10 || rate < 0)) {
 			throw new RuntimeException("rate out of range 0-10");
 		}
-
-		userEntity.setUserIngredients(new HashSet<UserIngredient>(
-				this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(0, 1000))));
+		// For ORM loading
+		Set<UserIngredient> userUserIngredients = new HashSet<UserIngredient>(
+				this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(0, 1000)));
+		
 		UserIngredient userIngredient = new UserIngredient();
 		userIngredient.setName(ingredientRes.getData().getName());
 		userIngredient.setType(type);
 		userIngredient.setRate(type.equals(IngredientTypeEnum.PREFERRED.name()) ? rate : null);
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingredientRes.getData().getId());
 		userIngredient.setId(key);
+		
 		return this.userIngreDAL.save(userIngredient);
-
 	}
 
 	@Override
