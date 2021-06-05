@@ -24,12 +24,14 @@ import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
 import mg.boundaries.helper.MenuFeedbackEnum;
 import mg.boundaries.helper.RecipeWithRate;
+import mg.boundaries.helper.UserLoginBoundary;
 import mg.data.converters.IngredientConverter;
 import mg.data.entities.IngredientEntity;
 import mg.data.entities.IngredientTypeEnum;
 import mg.data.entities.joinentities.UserIngredient;
 import mg.logic.RecipeService;
 import mg.logic.UserIngredientService;
+import mg.logic.UserService;
 import mg.logic.exceptions.RecipeNotFoundException;
 
 @Service
@@ -38,6 +40,7 @@ import mg.logic.exceptions.RecipeNotFoundException;
 public class RecipeApiService implements RecipeService {
 
 	private UserIngredientService userIngrdientsService;
+	private UserService userSercive;
 	@Value("${spoonacular.base.url}")
 	private String baseUrl;
 	@Value("${spoonacular.recipes.url}")
@@ -50,24 +53,34 @@ public class RecipeApiService implements RecipeService {
 	private ObjectMapper mapper;
 
 	@Autowired
-	public RecipeApiService(UserIngredientService userIngrdientsService, IngredientConverter ingredientConverter) {
+	public RecipeApiService(UserIngredientService userIngrdientsService, IngredientConverter ingredientConverter,
+			UserService userSercive) {
 		this.userIngrdientsService = userIngrdientsService;
 		this.ingredientConverter = ingredientConverter;
+		this.userSercive = userSercive;
 		mapper = new ObjectMapper();
 	}
 
 	@Override
 	public Response<RecipeBoundary[]> getAll(String userEmail, int page, int size) {
-		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
-		this.getRecipesWithIngredientNotIn(forbiddenUserIngredients, size);
-		return this.getByTitle(userEmail, "", page, size);
+		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
+		retval.setSuccess(userSercive.login(new UserLoginBoundary(userEmail)).getSuccess());
+		
+		if (retval.getSuccess()) {
+			List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
+			retval.setData(
+					this.getRecipesWithIngredientNotIn(forbiddenUserIngredients, size).toArray(new RecipeBoundary[0]));
+		}
+		return retval;
 	}
 
 	@Override
 	public Response<RecipeBoundary[]> getByTitle(String userEmail, String name, int page, int size) {
+		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
+		retval.setSuccess(userSercive.login(new UserLoginBoundary(userEmail)).getSuccess());
+
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 
-		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
 		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset="
 				+ page * size + "&number=" + size + "&excludeIngredients="
 				+ forbiddenUserIngredients.stream().map(i -> i.getName() + ",");
@@ -95,6 +108,7 @@ public class RecipeApiService implements RecipeService {
 	@Override
 	public List<RecipeBoundary> getRecipesWithIngredientNotIn(List<IngredientEntity> forbiddenIngredients, int count) {
 		List<RecipeBoundary> retval = new ArrayList<RecipeBoundary>();
+
 		StringBuilder excludeIngredientsSB = new StringBuilder();
 
 		for (int j = 0; j < forbiddenIngredients.size() - 1; j++) {
@@ -216,6 +230,8 @@ public class RecipeApiService implements RecipeService {
 
 	@Override
 	public RecipeBoundary[] getBestRecipesForUser(String userEmail, int count) {
+		userSercive.login(new UserLoginBoundary(userEmail));
+		
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 		// get All user PREFERRED ingredients
 		List<UserIngredient> preferredUserIngredients = userIngrdientsService
@@ -230,6 +246,8 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	private List<IngredientEntity> getUserForbiddenIndredients(String userEmail) {
+		userSercive.login(new UserLoginBoundary(userEmail));
+		
 		List<IngredientBoundary> allForbiddenIngredients = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
@@ -241,6 +259,8 @@ public class RecipeApiService implements RecipeService {
 
 	@Override
 	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
+		userSercive.login(new UserLoginBoundary(userEmail));
+		
 		IngredientBoundary[] ingredients = this.getById(recipeId).getIngredients();
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
 			for (IngredientBoundary ingredient : ingredients) {
