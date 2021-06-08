@@ -65,7 +65,7 @@ public class RecipeApiService implements RecipeService {
 	public Response<RecipeBoundary[]> getAll(String userEmail, int page, int size) {
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
 		retval.setSuccess(userSercive.login(new UserLoginBoundary(userEmail)).getSuccess());
-		
+
 		if (retval.getSuccess()) {
 			List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 			retval.setData(
@@ -81,8 +81,8 @@ public class RecipeApiService implements RecipeService {
 
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 
-		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&query=" + name + "&offset="
-				+ page * size + "&number=" + size + "&excludeIngredients="
+		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&fillIngredients=true&query="
+				+ name + "&offset=" + page * size + "&number=" + size + "&excludeIngredients="
 				+ forbiddenUserIngredients.stream().map(i -> i.getName() + ",");
 		;
 
@@ -120,8 +120,8 @@ public class RecipeApiService implements RecipeService {
 		try {
 			excludeListString = URLEncoder.encode(excludeIngredientsSB.toString(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException("Unsupported URL encoding");
 		}
 		String search = "/complexSearch?addRecipeInformation=true&fillIngredients=true&instructionsRequired=true&number="
 				+ count + "&excludeIngredients=" + excludeListString;
@@ -231,7 +231,7 @@ public class RecipeApiService implements RecipeService {
 	@Override
 	public RecipeBoundary[] getBestRecipesForUser(String userEmail, int count) {
 		userSercive.login(new UserLoginBoundary(userEmail));
-		
+
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 		// get All user PREFERRED ingredients
 		List<UserIngredient> preferredUserIngredients = userIngrdientsService
@@ -247,7 +247,7 @@ public class RecipeApiService implements RecipeService {
 
 	private List<IngredientEntity> getUserForbiddenIndredients(String userEmail) {
 		userSercive.login(new UserLoginBoundary(userEmail));
-		
+
 		List<IngredientBoundary> allForbiddenIngredients = userIngrdientsService
 				.getAllByType(userEmail, IngredientTypeEnum.FORBIDDEN.name(), 1000, 0).getData();
 
@@ -260,7 +260,7 @@ public class RecipeApiService implements RecipeService {
 	@Override
 	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
 		userSercive.login(new UserLoginBoundary(userEmail));
-		
+
 		IngredientBoundary[] ingredients = this.getById(recipeId).getIngredients();
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
 			for (IngredientBoundary ingredient : ingredients) {

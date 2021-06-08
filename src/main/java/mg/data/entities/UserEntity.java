@@ -34,7 +34,7 @@ public class UserEntity {
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_email")
-//	@MapsId("id.user_email")
+	@MapsId("id.user_email")
 	private Set<UserIngredient> userIngredients;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

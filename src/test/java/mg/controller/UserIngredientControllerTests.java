@@ -35,6 +35,7 @@ class UserIngredientControllerTests {
 	private String userIngredientUrl;
 	private int port;
 	private final UserBoundary baseUser = new UserBoundary("test@test.com", "test user", "Male");
+	private Long[] ingreLst;
 
 	@LocalServerPort
 	public void setPort(int port) {
@@ -43,6 +44,7 @@ class UserIngredientControllerTests {
 
 	@PostConstruct
 	public void init() {
+		ingreLst = new Long[] { (long) 1033, (long) 1056, (long) 1145, (long) 2047 };
 		this.restTemplate = new RestTemplate();
 		final String url = "http://localhost:" + this.port;
 		this.userUrl = url + "/user";
@@ -56,6 +58,13 @@ class UserIngredientControllerTests {
 
 	@AfterEach
 	void tearDown() throws Exception {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ingreLst.length-1; i++) {
+			sb.append(ingreLst[i]);
+			sb.append(",");
+		}
+		sb.append(ingreLst[ingreLst.length-1]);
+		this.restTemplate.delete(userIngredientUrl + "/" + this.baseUser.getEmail() + "?ingredients=" + sb.toString());
 		this.restTemplate.delete(userUrl + "/" + this.baseUser.getEmail());
 
 	}
@@ -65,9 +74,8 @@ class UserIngredientControllerTests {
 		// set preferred UserIngredient
 		String addingreURL = (userIngredientUrl + "/update/" + this.baseUser.getEmail() + "?type="
 				+ IngredientTypeEnum.PREFERRED.name());
-		Long[] ingreLst = new Long[] { (long) 1033, (long) 1056, (long) 1145, (long) 2047 };
 		this.restTemplate.put(addingreURL, ingreLst);
-		
+
 		// Get user ingredients
 		String getIngreURL = userIngredientUrl + "/by/type/" + this.baseUser.getEmail() + "?type="
 				+ IngredientTypeEnum.PREFERRED.name();
@@ -76,7 +84,7 @@ class UserIngredientControllerTests {
 				}).getBody();
 		// check query success
 		assertThat(res.getSuccess());
-		
+
 		// check all ingredients submitted
 		IntStream.range(0, res.getData().size()).forEach(idx -> {
 			assertThat(new ArrayList<Long>(Arrays.asList(ingreLst)).contains(res.getData().get(idx).getId()));

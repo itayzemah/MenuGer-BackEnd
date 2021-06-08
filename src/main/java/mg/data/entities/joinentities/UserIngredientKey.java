@@ -22,10 +22,10 @@ public class UserIngredientKey implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "user_email")
-	private @NonNull String userEmail;
+	private String userEmail;
     
 	@Column(name = "ingredient_id")
-	private @NonNull Long ingredientId;
+	private Long ingredientId;
 
 	@Override
 	public int hashCode() {
