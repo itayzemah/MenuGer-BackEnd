@@ -49,7 +49,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 		
-		if (rate != null && (rate > 10 || rate < 0)) {
+		if (rate == null || (rate > 10 || rate < 0)) {
 			throw new RuntimeException("rate out of range 0-10");
 		}
 		// For ORM loading
@@ -186,6 +186,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 						this.ingredientService.findById(ingredientId).getData().getName(),
 						IngredientTypeEnum.PREFERRED.name(), 0.0));
 		userIngredient.setRate(userIngredient.getRate() + delta);
+		if(userIngredient.getRate() <=10 && userIngredient.getRate() >= 0)
 		this.userIngreDAL.save(userIngredient);
 		return userIngredient.getRate();
 	}
