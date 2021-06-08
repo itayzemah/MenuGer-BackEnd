@@ -191,4 +191,11 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		return userIngredient.getRate();
 	}
 
+	@Override
+	@Transactional
+	public void removeAll(String userEmail) {
+		this.userIngreDAL.deleteAllById_UserEmail(userEmail);
+		
+	}
+
 }

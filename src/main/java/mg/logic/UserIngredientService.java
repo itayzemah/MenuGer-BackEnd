@@ -26,4 +26,6 @@ public interface UserIngredientService {
 	public double goodScore(String userEmail, Long ingredientId);
 	
 	public double badScore(String userEmail, Long ingredientId);
+
+	public void removeAll(String userEmail);
 }

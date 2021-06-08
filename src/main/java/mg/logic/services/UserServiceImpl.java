@@ -18,6 +18,7 @@ import mg.boundaries.helper.UserLoginBoundary;
 import mg.data.converters.UserConverter;
 import mg.data.dal.UserDataAccessRepo;
 import mg.data.entities.UserEntity;
+import mg.logic.UserIngredientService;
 import mg.logic.UserService;
 import mg.logic.exceptions.UserAlreadyExistException;
 import mg.logic.exceptions.UserNotFoundException;
@@ -28,7 +29,8 @@ import mg.logic.exceptions.UserNotFoundException;
 public class UserServiceImpl implements UserService {
 	private UserDataAccessRepo userDAL;
 	private UserConverter userConverter;
-
+	private UserIngredientService userIngreService;
+	
 	@Override
 	public Boolean isUserExist(String userEmail) {
 		return userDAL.existsById(userEmail);
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
 			return rv;
 		}
 		try {
+			userIngreService.removeAll(userEmail);
 			UserEntity entity = opUser.get();
 			entity.setActive(false);
 			this.userDAL.delete(entity);
