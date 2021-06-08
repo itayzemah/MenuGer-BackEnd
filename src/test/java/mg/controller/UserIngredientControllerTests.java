@@ -10,7 +10,10 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,27 +48,27 @@ class UserIngredientControllerTests {
 	@PostConstruct
 	public void init() {
 		ingreLst = new Long[] { (long) 1033, (long) 1056, (long) 1145, (long) 2047 };
-		this.restTemplate = new RestTemplate();
-		final String url = "http://localhost:" + this.port;
-		this.userUrl = url + "/user";
-		this.userIngredientUrl = url + "/useringredient";
+		restTemplate = new RestTemplate();
+		final String url = "http://localhost:" + port;
+		userUrl = url + "/user";
+		userIngredientUrl = url + "/useringredient";
 	}
 
 	@BeforeEach
 	void setUp() throws Exception {
-		this.restTemplate.postForObject(userUrl + "/subscribe", baseUser, Response.class);
+		this.restTemplate.postForObject(this.userUrl + "/subscribe", this.baseUser, Response.class);
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < ingreLst.length-1; i++) {
-			sb.append(ingreLst[i]);
+		for (int i = 0; i < this.ingreLst.length - 1; i++) {
+			sb.append(this.ingreLst[i]);
 			sb.append(",");
 		}
-		sb.append(ingreLst[ingreLst.length-1]);
-		this.restTemplate.delete(userIngredientUrl + "/" + this.baseUser.getEmail() + "?ingredients=" + sb.toString());
-		this.restTemplate.delete(userUrl + "/" + this.baseUser.getEmail());
+		sb.append(this.ingreLst[this.ingreLst.length - 1]);
+		this.restTemplate.delete(this.userIngredientUrl + "/" + this.baseUser.getEmail() + "?ingredients=" + sb.toString());
+		this.restTemplate.delete(this.userUrl + "/" + this.baseUser.getEmail());
 
 	}
 
@@ -74,7 +77,7 @@ class UserIngredientControllerTests {
 		// set preferred UserIngredient
 		String addingreURL = (userIngredientUrl + "/update/" + this.baseUser.getEmail() + "?type="
 				+ IngredientTypeEnum.PREFERRED.name());
-		this.restTemplate.put(addingreURL, ingreLst);
+		restTemplate.put(addingreURL, ingreLst);
 
 		// Get user ingredients
 		String getIngreURL = userIngredientUrl + "/by/type/" + this.baseUser.getEmail() + "?type="

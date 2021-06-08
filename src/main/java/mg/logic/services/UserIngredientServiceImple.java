@@ -49,7 +49,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
 		
-		if (rate == null || (rate > 10 || rate < 0)) {
+		if (rate != null && (rate > 10 || rate < 0)) {
 			throw new RuntimeException("rate out of range 0-10");
 		}
 		// For ORM loading
