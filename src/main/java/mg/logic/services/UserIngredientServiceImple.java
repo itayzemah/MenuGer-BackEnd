@@ -193,10 +193,10 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	@Override
 	@Transactional
 	public void removeAll(String userEmail) {
-		System.err.println("----------"
-				+ this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.PREFERRED.name(), userEmail));
-		System.err
-				.println(this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.FORBIDDEN.name(), userEmail));
+//		System.err.println("----------"
+//				+ this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.PREFERRED.name(), userEmail));
+//		System.err
+//				.println(this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.FORBIDDEN.name(), userEmail));
 		System.err.println("********************" + this.userIngreDAL.deleteById_UserEmail(userEmail));
 	}
 

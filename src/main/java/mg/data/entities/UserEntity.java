@@ -32,13 +32,13 @@ public class UserEntity {
 	private String gender;
 	private boolean isActive;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "user_email")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.userEmail",cascade = CascadeType.ALL)
+//	@JoinColumn(name = "user_email")
 //	@MapsId("id.user_email")
 	private Set<UserIngredient> userIngredients;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userEmail", cascade = CascadeType.ALL)
 //	@MapsId("userEmail")
-	@JoinColumn(name = "userEmail")
+//	@JoinColumn(name = "userEmail")
 	private Set<MenuEntity> userMenus;
 }
