@@ -50,30 +50,31 @@ public class UserServiceImpl implements UserService {
 		return rv;
 	}
 
-	@Transactional
-	@Override
-	public Response<UserBoundary> unsubscribe(String userEmail) {
-		Response<UserBoundary> rv = new Response<>();
-		Optional<UserEntity> opUser = this.userDAL.findById(userEmail);
-		if (!opUser.isPresent()) {
-			rv.setMessage("User with the id: " + userEmail + " is not in registered");
-			rv.setSuccess(false);
+		@Transactional
+		@Override
+		public Response<UserBoundary> unsubscribe(String userEmail) {
+			Response<UserBoundary> rv = new Response<>();
+			Optional<UserEntity> opUser = this.userDAL.findById(userEmail);
+			if (!opUser.isPresent()) {
+				rv.setMessage("User with the id: " + userEmail + " is not in registered");
+				rv.setSuccess(false);
+				return rv;
+			}
+			try {
+				userIngreService.removeAll(userEmail);
+				UserEntity entity = opUser.get();
+				entity.setActive(false);
+				System.err.println("========" + entity);
+				this.userDAL.delete(entity);
+	//			this.userDAL.save(entity);
+				rv.setMessage("User " + entity.getFullName()+" "+userEmail + " Unsubscribed successfully");
+			} catch (IllegalArgumentException ex) {
+				rv.setMessage("Wrong User");
+				rv.setSuccess(false);
+			}
+	
 			return rv;
 		}
-		try {
-			userIngreService.removeAll(userEmail);
-			UserEntity entity = opUser.get();
-			entity.setActive(false);
-			this.userDAL.delete(entity);
-//			this.userDAL.save(entity);
-			rv.setMessage("User " + entity.getFullName()+" "+userEmail + " Unsubscribed successfully");
-		} catch (IllegalArgumentException ex) {
-			rv.setMessage("Wrong User");
-			rv.setSuccess(false);
-		}
-
-		return rv;
-	}
 
 	@Transactional(readOnly = true)
 	@Override

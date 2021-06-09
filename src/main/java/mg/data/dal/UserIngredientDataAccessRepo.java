@@ -19,5 +19,5 @@ public interface UserIngredientDataAccessRepo extends JpaRepository<UserIngredie
 	public List<UserIngredient> deleteByTypeAndId_UserEmail(@Param("type") String type,
 			@Param("user_email") String userEmail);
 
-	public void deleteAllById_UserEmail(@Param("user_email") String userEmail);
+	public List<UserIngredient> deleteById_UserEmail(@Param("user_email") String userEmail);
 }

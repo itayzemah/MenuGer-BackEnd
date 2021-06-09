@@ -51,7 +51,7 @@ public class RecipeController {
 
 	@RequestMapping(path = "/bests/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RecipeBoundary[] getAllBestRecipes(@PathVariable("userEmail") String userEmail,
-			@RequestParam(name = "count", required = false, defaultValue = "20") int count) {
+			@RequestParam(name = "count", required = false, defaultValue = "30") int count) {
 		return this.recipeService.getBestRecipesForUser(userEmail,count);
 	}
 

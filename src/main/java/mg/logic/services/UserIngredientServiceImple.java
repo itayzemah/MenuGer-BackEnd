@@ -48,21 +48,21 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		UserEntity userEntity = this.userDAL.findById(userEmail)
 				.orElseThrow(() -> new UserNotFoundException("User " + userEmail + " not found"));
-		
+
 		if (rate != null && (rate > 10 || rate < 0)) {
 			throw new RuntimeException("rate out of range 0-10");
 		}
 		// For ORM loading
 		Set<UserIngredient> userUserIngredients = new HashSet<UserIngredient>(
 				this.userIngreDAL.findAllById_UserEmail(userEmail, PageRequest.of(0, 1000)));
-		
+
 		UserIngredient userIngredient = new UserIngredient();
 		userIngredient.setName(ingredientRes.getData().getName());
 		userIngredient.setType(type);
 		userIngredient.setRate(type.equals(IngredientTypeEnum.PREFERRED.name()) ? rate : null);
 		UserIngredientKey key = new UserIngredientKey(userEntity.getEmail(), ingredientRes.getData().getId());
 		userIngredient.setId(key);
-		
+
 		return this.userIngreDAL.save(userIngredient);
 	}
 
@@ -77,7 +77,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(type, userEmail,
 				PageRequest.of(page, size));
-		
+
 		rv.setData(lst.stream().map((ui) -> {
 			IngredientBoundary ingredient = new IngredientBoundary();
 			ingredient.setId(ui.getId().getIngredientId());
@@ -99,7 +99,7 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			return rv;
 		}
 
-		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(type,userEmail, 
+		List<UserIngredient> lst = this.userIngreDAL.findAllByTypeAndId_UserEmail(type, userEmail,
 				PageRequest.of(page, size));
 		rv.setData(lst);
 		return rv;
@@ -148,7 +148,6 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 		}
 		for (int i = 0; i < ingredientsLst.size(); i++) {
-
 			this.update(userEmail, ingredientsLst.get(i), type,
 					type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null);
 		}
@@ -186,16 +185,19 @@ public class UserIngredientServiceImple implements UserIngredientService {
 						this.ingredientService.findById(ingredientId).getData().getName(),
 						IngredientTypeEnum.PREFERRED.name(), 0.0));
 		userIngredient.setRate(userIngredient.getRate() + delta);
-		if(userIngredient.getRate() <=10 && userIngredient.getRate() >= 0)
-		this.userIngreDAL.save(userIngredient);
+		if (userIngredient.getRate() <= 10 && userIngredient.getRate() >= 0)
+			this.userIngreDAL.save(userIngredient);
 		return userIngredient.getRate();
 	}
 
 	@Override
 	@Transactional
 	public void removeAll(String userEmail) {
-		this.userIngreDAL.deleteAllById_UserEmail(userEmail);
-		
+		System.err.println("----------"
+				+ this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.PREFERRED.name(), userEmail));
+		System.err
+				.println(this.userIngreDAL.deleteByTypeAndId_UserEmail(IngredientTypeEnum.FORBIDDEN.name(), userEmail));
+		System.err.println("********************" + this.userIngreDAL.deleteById_UserEmail(userEmail));
 	}
 
 }
