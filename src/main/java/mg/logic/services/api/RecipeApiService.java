@@ -79,11 +79,12 @@ public class RecipeApiService implements RecipeService {
 		Response<RecipeBoundary[]> retval = new Response<RecipeBoundary[]>();
 		retval.setSuccess(userSercive.login(new UserLoginBoundary(userEmail)).getSuccess());
 
-		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
+		List<IngredientEntity> forbiddenIngredients = getUserForbiddenIndredients(userEmail);
+		String excludeListString = getForbiddenIngredientsAsFlatString(forbiddenIngredients);
 
 		String search = "/complexSearch?addRecipeInformation=true&instructionsRequired=true&fillIngredients=true&query="
 				+ name + "&offset=" + page * size + "&number=" + size + "&excludeIngredients="
-				+ forbiddenUserIngredients.stream().map(i -> i.getName() + ",");
+				+ excludeListString;
 		;
 
 		String body = "";
@@ -109,20 +110,7 @@ public class RecipeApiService implements RecipeService {
 	public List<RecipeBoundary> getRecipesWithIngredientNotIn(List<IngredientEntity> forbiddenIngredients, int count) {
 		List<RecipeBoundary> retval = new ArrayList<RecipeBoundary>();
 
-		StringBuilder excludeIngredientsSB = new StringBuilder();
-
-		for (int j = 0; j < forbiddenIngredients.size() - 1; j++) {
-			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());
-			excludeIngredientsSB.append(",");
-		}
-		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() - 1).getName());
-		String excludeListString = "";
-		try {
-			excludeListString = URLEncoder.encode(excludeIngredientsSB.toString(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unsupported URL encoding");
-		}
+		String excludeListString = getForbiddenIngredientsAsFlatString(forbiddenIngredients);
 		String search = "/complexSearch?addRecipeInformation=true&fillIngredients=true&instructionsRequired=true&number="
 				+ count + "&excludeIngredients=" + excludeListString;
 
@@ -138,6 +126,24 @@ public class RecipeApiService implements RecipeService {
 
 		}
 		return retval;
+	}
+
+	private String getForbiddenIngredientsAsFlatString(List<IngredientEntity> forbiddenIngredients) {
+		StringBuilder excludeIngredientsSB = new StringBuilder();
+
+		for (int j = 0; j < forbiddenIngredients.size() - 1; j++) {
+			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());
+			excludeIngredientsSB.append(",");
+		}
+		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() - 1).getName());
+		String excludeListString = "";
+		try {
+			excludeListString = URLEncoder.encode(excludeIngredientsSB.toString(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Unsupported URL encoding");
+		}
+		return excludeListString;
 	}
 
 	private List<RecipeBoundary> extractListOfRecipes(String responseBody) {
