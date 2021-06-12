@@ -129,16 +129,11 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	private String getForbiddenIngredientsAsFlatString(List<IngredientEntity> forbiddenIngredients) {
-		StringBuilder excludeIngredientsSB = new StringBuilder();
-
-		for (int j = 0; j < forbiddenIngredients.size() - 1; j++) {
-			excludeIngredientsSB.append(forbiddenIngredients.get(j).getName());
-			excludeIngredientsSB.append(",");
-		}
-		excludeIngredientsSB.append(forbiddenIngredients.get(forbiddenIngredients.size() - 1).getName());
-		String excludeListString = "";
+		String excludeListString = forbiddenIngredients.stream().map(IngredientEntity::getName)
+                .collect(Collectors.joining(","));		
+		
 		try {
-			excludeListString = URLEncoder.encode(excludeIngredientsSB.toString(), "UTF-8");
+			excludeListString = URLEncoder.encode(excludeListString, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Unsupported URL encoding");
