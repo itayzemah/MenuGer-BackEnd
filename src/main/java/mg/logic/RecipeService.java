@@ -2,6 +2,7 @@ package mg.logic;
 
 import java.util.List;
 
+import mg.boundaries.IngredientBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
 import mg.boundaries.helper.MenuFeedbackEnum;
@@ -21,6 +22,6 @@ public interface RecipeService {
 
 	public RecipeBoundary[] getBestRecipesForUser(String userEmail, int count);
 
-	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback);
+	public void feedbackRecipe(IngredientBoundary[] recipeId, String userEmail, MenuFeedbackEnum feedback);
 
 }

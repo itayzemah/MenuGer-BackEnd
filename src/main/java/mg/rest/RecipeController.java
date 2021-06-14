@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
+import mg.boundaries.IngredientBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.Response;
 import mg.boundaries.helper.MenuFeedbackEnum;
@@ -58,7 +59,7 @@ public class RecipeController {
 	@RequestMapping(path = "/feedback/{userEmail}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void feedbackMenuResults(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "feedback", required = true, defaultValue = "GOOD") MenuFeedbackEnum feedback,
-			@RequestParam(name = "recipeId", required = true, defaultValue = "-1") long recipeId) {
-		this.recipeService.feedbackRecipe(recipeId, userEmail, feedback);
+			@RequestBody(required = true) IngredientBoundary[] ingredients) {
+		this.recipeService.feedbackRecipe(ingredients, userEmail, feedback);
 	}
 }

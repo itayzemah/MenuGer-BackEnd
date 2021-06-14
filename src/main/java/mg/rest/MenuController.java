@@ -38,7 +38,7 @@ public class MenuController {
 
 	@RequestMapping(path = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public MenuBoundary buildMenu(@RequestBody MenuBuilderBoundary menubuilderBoundary) {
-		return menuService.buildMenu(menubuilderBoundary.getUserEmail(), menubuilderBoundary.getRecipeId());
+		return menuService.buildMenu(menubuilderBoundary.getUserEmail(), menubuilderBoundary.getRecipes());
 	}
 
 	@RequestMapping(path = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

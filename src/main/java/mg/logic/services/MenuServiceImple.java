@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import mg.boundaries.IngredientBoundary;
 import mg.boundaries.MenuBoundary;
 import mg.boundaries.RecipeBoundary;
 import mg.boundaries.helper.MenuFeedbackEnum;
@@ -39,21 +40,22 @@ public class MenuServiceImple implements MenuService {
 	}
 
 	@Override
-	public MenuBoundary buildMenu(String userEmail, Long[] recipeId) {
+//	public MenuBoundary buildMenu(String userEmail, Long[] recipeId) {
+	public MenuBoundary buildMenu(String userEmail, RecipeBoundary[] recipes) {
 		MenuEntity menu = new MenuEntity();
 		menu.setUserEmail(userEmail);
 		menu.setTimestamp(new Date());
 		menu = this.menuDAL.save(menu);
-		List<RecipeBoundary> recipes = new ArrayList<>();
+//		List<RecipeBoundary> recipes = new ArrayList<>();
 		List<MenuRecipe> menuRecipes = new ArrayList<>();
-		for (int i = 0; i < recipeId.length; i++) {
+		for (int i = 0; i < recipes.length; i++) {
 
-			recipes.add(this.recipeService.getById(recipeId[i]));
-			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes.get(i).getId()));
+//			recipes.add(this.recipeService.getById(recipeId[i]));
+			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes[i].getId()));
+			this.recipeService.feedbackRecipe(recipes[i].getIngredients(), userEmail, MenuFeedbackEnum.GOOD);
 		}
 //		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
-		recipes.forEach(r -> this.recipeService.feedbackRecipe(r.getId(), userEmail, MenuFeedbackEnum.GOOD));
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);
 		rv.setRecipes(this.menuRecipeService.getAllForMenu(menu.getId()));
 		return rv;

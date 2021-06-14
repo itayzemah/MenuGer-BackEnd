@@ -259,10 +259,9 @@ public class RecipeApiService implements RecipeService {
 	}
 
 	@Override
-	public void feedbackRecipe(long recipeId, String userEmail, MenuFeedbackEnum feedback) {
+	public void feedbackRecipe(IngredientBoundary[] ingredients, String userEmail, MenuFeedbackEnum feedback) {
 		userSercive.login(new UserLoginBoundary(userEmail));
 
-		IngredientBoundary[] ingredients = this.getById(recipeId).getIngredients();
 		if (feedback.equals(MenuFeedbackEnum.GOOD)) {
 			for (IngredientBoundary ingredient : ingredients) {
 				this.userIngrdientsService.goodScore(userEmail, ingredient.getId());

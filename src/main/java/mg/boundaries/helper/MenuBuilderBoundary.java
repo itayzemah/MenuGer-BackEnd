@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mg.boundaries.RecipeBoundary;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +14,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class MenuBuilderBoundary {
 	
-	private Long[] recipeId;
+	private RecipeBoundary[] recipes;
 	private String userEmail;
 }
