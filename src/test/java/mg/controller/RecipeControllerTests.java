@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -29,6 +30,7 @@ import mg.data.entities.IngredientTypeEnum;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RecipeControllerTests {
 	private RestTemplate restTemplate;
 	private String userUrl;
@@ -56,7 +58,7 @@ class RecipeControllerTests {
 		this.recipeUrl = url + "/recipe";
 	}
 
-	@BeforeEach
+	@BeforeAll
 	 void setUp() throws Exception {
 		this.restTemplate.postForObject(userUrl + "/subscribe", baseUser, Response.class);
 
@@ -73,7 +75,7 @@ class RecipeControllerTests {
 
 	}
 
-	@AfterEach
+	@AfterAll
 	void tearDown() throws Exception {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < PrefLst.length-1; i++) {

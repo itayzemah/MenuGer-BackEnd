@@ -32,8 +32,6 @@ public class MenuRecipeServiceImple implements MenuRecipeService{
 	@Override
 	public MenuRecipe create(long menuId, long recipeId) {
 		MenuRecipe mr = new MenuRecipe();
-//		mr.setMenu(this.menuDAL.findById(menuId).orElseThrow(() -> new RuntimeException("Error on Menu creation")));
-//		mr.setRecipe(recipeId);
 		mr.setId(new MenuRecipeId(recipeId, menuId));
 		return menuRecipeDAL.save(mr);
 	}

@@ -31,7 +31,7 @@ public class UserIngredientController {
 	@RequestMapping(path = "/update1/{userEmail}/{ingredientId}", method = RequestMethod.PUT)
 	public void update(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
-			@RequestParam(name = "weight", required = false, defaultValue = "null") Double weight,
+			@RequestParam(name = "weight", required = false, defaultValue = "0") Double weight,
 			@PathVariable("ingredientId") Long ingredientId) {
 		userIngreService.update(userEmail, ingredientId, type.toString(), weight);
 	}
@@ -44,19 +44,27 @@ public class UserIngredientController {
 		userIngreService.update(userEmail, ingredients, type.toString());
 	}
 
+	@RequestMapping(path = "ui/by/type/{userEmail}", method = RequestMethod.GET)
+	public Response<List<UserIngredient>> getAllUserIngredientOfUserByType(@PathVariable("userEmail") String userEmail,
+			@RequestParam(name = "type", required = false, defaultValue = "preferred") IngredientTypeEnum type,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
+		return userIngreService.getAllUserIngredientOfUserByType(userEmail, type == null ? IngredientTypeEnum.PREFERRED : type, size, page);
+	}
+	
 	@RequestMapping(path = "by/type/{userEmail}", method = RequestMethod.GET)
 	public Response<List<IngredientBoundary>> getAllIngreOfUserByType(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "type", required = false, defaultValue = "preferred") IngredientTypeEnum type,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
-		return userIngreService.getAllByType(userEmail, type == null ? "" : type.toString(), size, page);
+		return userIngreService.getAllByType(userEmail, type == null ? "preferred" : type.toString(), size, page);
 	}
 
 	@RequestMapping(path = "/{userEmail}", method = RequestMethod.GET)
 	public Response<Map<String, IngredientBoundary[]>> getAllIngreOfUser(@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000") int size) {
-		return userIngreService.getAll(userEmail, size, page);
+		return userIngreService.getAllIngredients(userEmail, size, page);
 	}
 
 	@RequestMapping(path = "/{userEmail}", method = RequestMethod.DELETE)

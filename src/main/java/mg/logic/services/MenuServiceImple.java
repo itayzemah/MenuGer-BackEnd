@@ -1,6 +1,7 @@
 package mg.logic.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,18 +47,14 @@ public class MenuServiceImple implements MenuService {
 		menu.setUserEmail(userEmail);
 		menu.setTimestamp(new Date());
 		menu = this.menuDAL.save(menu);
-//		List<RecipeBoundary> recipes = new ArrayList<>();
 		List<MenuRecipe> menuRecipes = new ArrayList<>();
 		for (int i = 0; i < recipes.length; i++) {
-
-//			recipes.add(this.recipeService.getById(recipeId[i]));
 			menuRecipes.add(this.menuRecipeService.create(menu.getId(), recipes[i].getId()));
 			this.recipeService.feedbackRecipe(recipes[i].getIngredients(), userEmail, MenuFeedbackEnum.GOOD);
 		}
-//		menu.setMenuRecipes(new HashSet<>(menuRecipes));
 		menuDAL.save(menu);
 		MenuBoundary rv = this.menuConverter.toBoundary(menu);
-		rv.setRecipes(this.menuRecipeService.getAllForMenu(menu.getId()));
+		rv.setRecipes(Arrays.asList(recipes));
 		return rv;
 	}
 

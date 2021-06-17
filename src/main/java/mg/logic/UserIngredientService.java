@@ -5,6 +5,7 @@ import java.util.Map;
 
 import mg.boundaries.IngredientBoundary;
 import mg.boundaries.Response;
+import mg.data.entities.IngredientTypeEnum;
 import mg.data.entities.joinentities.UserIngredient;
 
 public interface UserIngredientService {
@@ -15,7 +16,7 @@ public interface UserIngredientService {
 
 	public void update(String userEmail, Long[] ingredients, String type);
 
-	public Response<Map<String,IngredientBoundary[]>> getAll(String userEmail, int size, int page);
+	public Response<Map<String,IngredientBoundary[]>> getAllIngredients(String userEmail, int size, int page);
 
 	public void unbind(String userEmail, Long[] ingredients);
 
@@ -28,4 +29,7 @@ public interface UserIngredientService {
 	public double badScore(String userEmail, Long ingredientId);
 
 	public void removeAll(String userEmail);
+
+	public Response<List<UserIngredient>> getAllUserIngredientOfUserByType(String userEmail, IngredientTypeEnum type, int size,
+			int page);
 }
