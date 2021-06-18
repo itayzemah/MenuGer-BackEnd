@@ -27,56 +27,48 @@ import mg.logic.exceptions.UserNotFoundException;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping(path="/user")
+@RequestMapping(path = "/user")
 public class UserController {
 
 	private UserService userService;
-	
+
 	@Autowired
 	public UserController(UserService userService) {
 		super();
 		this.userService = userService;
 	}
 
-	@RequestMapping
-			(path="/subscribe", method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/subscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<UserBoundary> subscribe(@RequestBody UserBoundary user) {
 		return this.userService.create(user);
 	}
-	
-	@RequestMapping
-	(path="/{userEmail}", method = RequestMethod.DELETE,
-	 produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(path = "/{userEmail}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<UserBoundary> unsubscribe(@PathVariable String userEmail) {
 		return this.userService.unsubscribe(userEmail);
-	} 
-	
-	@RequestMapping
-	(path="/login", method = RequestMethod.POST,
-	consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	}
+
+	@RequestMapping(path = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<UserBoundary> login(@RequestBody UserLoginBoundary user) {
 		return this.userService.login(user);
 	}
-	@RequestMapping
-	(method = RequestMethod.PUT,
-	consumes = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateUser(@RequestBody UserBoundary user) {
 		this.userService.updateUser(user);
 	}
-	@RequestMapping
-	(path="/all", method = RequestMethod.GET,
-	 produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(path = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Response<UserBoundary[]> getAllUsers() {
 		return this.userService.getAll();
 	}
-	
+
 	@RequestMapping(path = "/{email}/exist", method = RequestMethod.GET)
 	@ResponseBody
 	public Boolean isUserExist(@Email @PathVariable("email") String email) {
 		return this.userService.isUserExist(email);
 	}
-	
+
 	@ExceptionHandler
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
 	public Response<String> handleException(UserNotFoundException e) {
@@ -90,7 +82,7 @@ public class UserController {
 		response.setMessage(error);
 		return response;
 	}
-	
+
 	@ExceptionHandler
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	public Map<String, String> handleException(UserAlreadyExistException e) {

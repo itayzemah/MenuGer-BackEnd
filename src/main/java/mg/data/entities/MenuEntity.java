@@ -36,7 +36,6 @@ public class MenuEntity {
 	private Long id;
 
 	private Date timestamp;
-	private short numOfErrors;
 	
 	private String userEmail;
 
@@ -44,4 +43,5 @@ public class MenuEntity {
 	@JoinColumn(name = "id")
 	private Set<MenuRecipe> menuRecipes;
 
+	private short numOfErrors;
 }

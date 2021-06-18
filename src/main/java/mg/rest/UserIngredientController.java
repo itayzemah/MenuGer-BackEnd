@@ -74,7 +74,7 @@ public class UserIngredientController {
 				.collect(Collectors.toList()).toArray(new Long[0]);
 		userIngreService.unbind(userEmail, ingredientsArr);
 	}
-	
+
 	@RequestMapping(path = "/{userEmail}/all", method = RequestMethod.DELETE)
 	public void removeAllUserIngredient(@PathVariable("userEmail") String userEmail) {
 		userIngreService.removeAll(userEmail);

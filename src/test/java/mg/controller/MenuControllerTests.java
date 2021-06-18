@@ -3,6 +3,7 @@ package mg.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -103,22 +104,26 @@ class MenuControllerTests {
 				r -> Arrays.stream(r.getIngredients()).forEach(i -> assertThat(preferredIngredients.contains(i))));
 
 	}
-//	@Test
-//	void test_build_menu_add_rate_to_ingredients_in_pref_list() {
-//		List<UserIngredient> beforeAddPreferredIngredients = getUserIngredientOfUserByType(
-//				IngredientTypeEnum.PREFERRED);
-//
-//		RecipeBoundary[] recipes = getBestRecipes();
-//
-//		MenuBuilderBoundary mb = new MenuBuilderBoundary(IntStream.range(0, 5).boxed().map(i -> recipes[i])
-//				.collect(Collectors.toList()).toArray(new RecipeBoundary[0]), this.baseUser.getEmail());
-//		
-//		this.restTemplate.postForObject(menuUrl + "/build", mb, MenuBoundary.class);
-//
-//		List<UserIngredient> afterAddPreferredIngredients = getUserIngredientOfUserByType(IngredientTypeEnum.PREFERRED);
-//
-//		assertRateOfIngredientIncreasedOrAdded(beforeAddPreferredIngredients,afterAddPreferredIngredients);
-//	}
+
+	@Test
+	void test_build_menu_add_rate_to_ingredients_in_pref_list() {
+		List<UserIngredient> beforeAddPreferredIngredients = getUserIngredientOfUserByType(
+				IngredientTypeEnum.PREFERRED);
+
+		RecipeBoundary[] recipes = getBestRecipes();
+		RecipeBoundary[] selectedRecipes = IntStream.range(0, 5).boxed().map(i -> recipes[i])
+				.collect(Collectors.toList()).toArray(new RecipeBoundary[0]);
+
+		MenuBuilderBoundary mb = new MenuBuilderBoundary(selectedRecipes, this.baseUser.getEmail());
+
+		this.restTemplate.postForObject(menuUrl + "/build", mb, MenuBoundary.class);
+
+		List<UserIngredient> afterAddPreferredIngredients = getUserIngredientOfUserByType(IngredientTypeEnum.PREFERRED);
+
+		assertRateOfIngredientIncreasedOrAdded(beforeAddPreferredIngredients, afterAddPreferredIngredients,
+				selectedRecipes);
+	}
+
 	private RecipeBoundary[] getBestRecipes() {
 		RecipeBoundary[] recipes = this.restTemplate
 				.getForObject(recipeUrl + "/bests/" + this.baseUser.getEmail() + "?count=10", RecipeBoundary[].class);
@@ -129,31 +134,38 @@ class MenuControllerTests {
 		String getIngreURL = userIngredientUrl + "/ui/by/type/" + this.baseUser.getEmail() + "?type=" + type.name();
 		List<UserIngredient> preferredUserIngredients = this.restTemplate.exchange(getIngreURL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Response<List<UserIngredient>>>() {
-		}).getBody().getData();
-		return preferredUserIngredients;
-	}
-	private List<IngredientBoundary> getIngredientOfUserByType(IngredientTypeEnum type) {
-		String getIngreURL = userIngredientUrl + "/by/type/" + this.baseUser.getEmail() + "?type=" + type.name();
-		List<IngredientBoundary> preferredUserIngredients = this.restTemplate.exchange(getIngreURL, HttpMethod.GET, null,
-				new ParameterizedTypeReference<Response<List<IngredientBoundary>>>() {
 				}).getBody().getData();
 		return preferredUserIngredients;
 	}
 
-
+	private List<IngredientBoundary> getIngredientOfUserByType(IngredientTypeEnum type) {
+		String getIngreURL = userIngredientUrl + "/by/type/" + this.baseUser.getEmail() + "?type=" + type.name();
+		List<IngredientBoundary> preferredUserIngredients = this.restTemplate.exchange(getIngreURL, HttpMethod.GET,
+				null, new ParameterizedTypeReference<Response<List<IngredientBoundary>>>() {
+				}).getBody().getData();
+		return preferredUserIngredients;
+	}
 
 	private void assertRateOfIngredientIncreasedOrAdded(List<UserIngredient> beforeAddPreferredIngredients,
-			List<UserIngredient> afterAddPreferredIngredients) {
-
+			List<UserIngredient> afterAddPreferredIngredients, RecipeBoundary[] selectedRecipes) {
+		HashMap<Long, Integer> ingredientsInstances = new HashMap<Long, Integer>();
+		Arrays.stream(selectedRecipes).forEach(r -> {
+			Arrays.stream(r.getIngredients()).forEach(ing -> {
+				Long ingId = ing.getId();
+				int val = ingredientsInstances.getOrDefault(ingId, 0);
+				ingredientsInstances.put(ingId, val + 1);
+			});
+		});
 		afterAddPreferredIngredients.forEach(i -> {
+
 			int indexBefore = beforeAddPreferredIngredients.indexOf(i);
-			if(indexBefore == -1) {
-				assertThat(i.getRate()).isEqualTo(0.5);
-			}
-			else {
+			if (indexBefore == -1) {
+				assertThat(i.getRate()).isEqualTo(ingredientsInstances.get(i.getId().getIngredientId()) * 0.5);
+			} else {
 				System.err.println("---afterAddPreferredIngredients:" + i);
-				System.err.println("---beforeAddPreferredIngredients" +beforeAddPreferredIngredients.get(indexBefore));
-				assertThat(i.getRate()).isEqualTo(beforeAddPreferredIngredients.get(indexBefore).getRate()+0.5);
+				System.err.println("---beforeAddPreferredIngredients" + beforeAddPreferredIngredients.get(indexBefore));
+				assertThat(i.getRate()).isEqualTo(beforeAddPreferredIngredients.get(indexBefore).getRate()
+						+ ingredientsInstances.get(i.getId().getIngredientId()) * 0.5);
 			}
 		});
 	}

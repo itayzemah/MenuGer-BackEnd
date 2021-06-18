@@ -22,7 +22,6 @@ import mg.logic.RecipeService;
 @RequestMapping(path = "/recipe")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class RecipeController {
-
 	private RecipeService recipeService;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
