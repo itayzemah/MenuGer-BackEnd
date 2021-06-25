@@ -43,6 +43,13 @@ public class UserIngredientController {
 			@RequestBody Long[] ingredients) {
 		userIngreService.update(userEmail, ingredients, type.toString());
 	}
+	// POST /update/{userEmail}?type=???<IngredientTypeEnum>
+	@RequestMapping(path = "/update/{userEmail}", method = RequestMethod.POST)
+	public Response<List<UserIngredient>> bindIngredients(@PathVariable("userEmail") String userEmail,
+			@RequestParam(name = "type", required = true, defaultValue = "preferred") IngredientTypeEnum type,
+			@RequestBody IngredientBoundary[] ingredients) {
+		return userIngreService.create(userEmail, ingredients, type.toString());
+	}
 
 	@RequestMapping(path = "ui/by/type/{userEmail}", method = RequestMethod.GET)
 	public Response<List<UserIngredient>> getAllUserIngredientOfUserByType(@PathVariable("userEmail") String userEmail,

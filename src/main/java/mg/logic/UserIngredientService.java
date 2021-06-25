@@ -32,4 +32,6 @@ public interface UserIngredientService {
 
 	public Response<List<UserIngredient>> getAllUserIngredientOfUserByType(String userEmail, IngredientTypeEnum type, int size,
 			int page);
+
+	public Response<List<UserIngredient>> create(String userEmail, IngredientBoundary[] ingredients, String type);
 }

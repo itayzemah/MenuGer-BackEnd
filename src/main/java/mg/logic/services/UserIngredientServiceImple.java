@@ -53,9 +53,9 @@ public class UserIngredientServiceImple implements UserIngredientService {
 			ingredient = new IngredientBoundary();
 			ingredient.setId(ingredientRes.getData().getId());
 			ingredient.setName(ingredientRes.getData().getName());
-			
-		}else {
-			System.err.println("-*-*-*" +opUi.get().toString());
+
+		} else {
+			System.err.println("-*-*-*" + opUi.get().toString());
 			ingredient = new IngredientBoundary();
 			ingredient.setId(ingredientId);
 			ingredient.setName(opUi.get().getName());
@@ -196,16 +196,16 @@ public class UserIngredientServiceImple implements UserIngredientService {
 
 	private double changeRate(String userEmail, Long ingredientId, double delta) {
 		UserIngredient userIngredient = null;
-		Optional<UserIngredient> opUserIngredient = this.userIngreDAL.findById(new UserIngredientKey(userEmail, ingredientId));
-		if(opUserIngredient.isPresent() == false) {
+		Optional<UserIngredient> opUserIngredient = this.userIngreDAL
+				.findById(new UserIngredientKey(userEmail, ingredientId));
+		if (opUserIngredient.isPresent() == false) {
 			System.err.println("opUserIngredient.isPresent() = false");
-			userIngredient  = new UserIngredient(new UserIngredientKey(userEmail, ingredientId),
-						this.ingredientService.findById(ingredientId).getData().getName(),
-						IngredientTypeEnum.PREFERRED.name(), 0.0);
-		}
-		else {
+			userIngredient = new UserIngredient(new UserIngredientKey(userEmail, ingredientId),
+					this.ingredientService.findById(ingredientId).getData().getName(),
+					IngredientTypeEnum.PREFERRED.name(), 0.0);
+		} else {
 			userIngredient = opUserIngredient.get();
-			System.err.println("***////"+userIngredient);
+			System.err.println("***////" + userIngredient);
 		}
 		if (userIngredient.getRate() == null) {
 			userIngredient.setRate(0.0);
@@ -235,6 +235,25 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		List<UserIngredient> uiList = this.userIngreDAL.findAllByTypeAndId_UserEmail(type.name(), userEmail,
 				PageRequest.of(page, size));
 		rv.setData(uiList);
+		return rv;
+	}
+
+	@Override
+	public Response<List<UserIngredient>> create(String userEmail, IngredientBoundary[] ingredients, String type) {
+		Response<List<UserIngredient>> rv = new Response<List<UserIngredient>>();
+		for (IngredientBoundary ingredient : ingredients) {
+			List<UserIngredient> lst = new ArrayList<UserIngredient>();
+			lst.add(new UserIngredient(new UserIngredientKey(userEmail, ingredient.getId()), ingredient.getName(), type,
+					type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null));
+			try {
+				lst = this.userIngreDAL.saveAll(lst);
+				rv.setData(lst);
+			}catch (Exception e) {
+				rv.setMessage(e.getMessage());
+				rv.setSuccess(false);
+			}
+		}
+
 		return rv;
 	}
 
