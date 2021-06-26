@@ -239,19 +239,37 @@ public class UserIngredientServiceImple implements UserIngredientService {
 	}
 
 	@Override
+	@Transactional
 	public Response<List<UserIngredient>> create(String userEmail, IngredientBoundary[] ingredients, String type) {
 		Response<List<UserIngredient>> rv = new Response<List<UserIngredient>>();
-		for (IngredientBoundary ingredient : ingredients) {
-			List<UserIngredient> lst = new ArrayList<UserIngredient>();
-			lst.add(new UserIngredient(new UserIngredientKey(userEmail, ingredient.getId()), ingredient.getName(), type,
-					type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null));
-			try {
-				lst = this.userIngreDAL.saveAll(lst);
-				rv.setData(lst);
-			}catch (Exception e) {
-				rv.setMessage(e.getMessage());
-				rv.setSuccess(false);
+		ArrayList<IngredientBoundary> ingredientsLst = new ArrayList<>(Arrays.asList(ingredients));
+		List<UserIngredient> removedUI = this.userIngreDAL.deleteByTypeAndId_UserEmail(type, userEmail);
+		List<UserIngredient> toInsert = new ArrayList<UserIngredient>();
+
+		if (type == IngredientTypeEnum.PREFERRED.name()) {
+			for (UserIngredient userIngredient : removedUI) {
+				int idx = ingredientsLst.stream().map(i -> i.getId()).collect(Collectors.toList()) // list of ids
+						.indexOf(userIngredient.getId().getIngredientId());
+				if (idx != -1) {
+					toInsert.add(new UserIngredient(
+							new UserIngredientKey(userEmail, userIngredient.getId().getIngredientId()),
+							userIngredient.getName(), type,
+							type == IngredientTypeEnum.PREFERRED.name() ? userIngredient.getRate() : null));
+					ingredientsLst.remove(idx);
+				}
 			}
+
+		}
+		for (IngredientBoundary ingredient : ingredientsLst) {
+			toInsert.add(new UserIngredient(new UserIngredientKey(userEmail, ingredient.getId()), ingredient.getName(),
+					type, type == IngredientTypeEnum.PREFERRED.name() ? 5.0 : null));
+		}
+		try {
+			toInsert = this.userIngreDAL.saveAll(toInsert);
+			rv.setData(toInsert);
+		} catch (Exception e) {
+			rv.setMessage(e.getMessage());
+			rv.setSuccess(false);
 		}
 
 		return rv;
