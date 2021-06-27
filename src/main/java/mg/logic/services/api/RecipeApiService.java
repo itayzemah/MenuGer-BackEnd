@@ -235,11 +235,11 @@ public class RecipeApiService implements RecipeService {
 
 		List<IngredientEntity> forbiddenUserIngredients = getUserForbiddenIndredients(userEmail);
 		// get All user PREFERRED ingredients
-		List<UserIngredient> preferredUserIngredients = userIngrdientsService
-				.getAllUserIngredientByType(userEmail, IngredientTypeEnum.PREFERRED.name(), 1000, 0).getData();
-
+		List<UserIngredient> preferredAgreedUserIngredients = userIngrdientsService
+				.getUserIngredientsNotForb(userEmail);
+		System.err.println(preferredAgreedUserIngredients);
 		// get all appropriate recipes
-		List<RecipeWithRate> recipesWithRate = getListOfRatedRecipes(preferredUserIngredients,
+		List<RecipeWithRate> recipesWithRate = getListOfRatedRecipes(preferredAgreedUserIngredients,
 				this.getRecipesWithIngredientNotIn(forbiddenUserIngredients, count));
 
 		recipesWithRate.sort(Comparator.comparingDouble(RecipeWithRate::getRate).reversed());

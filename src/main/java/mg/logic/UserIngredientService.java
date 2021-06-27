@@ -23,6 +23,7 @@ public interface UserIngredientService {
 	public Response<List<UserIngredient>> getAllUserIngredientByType(String userEmail, String type, int size, int page);
 
 	public UserIngredient getOne(String user, Long ingredientId);	
+	public List<UserIngredient> getUserIngredientsNotForb(String userEmail);	
 	
 	public double goodScore(String userEmail, Long ingredientId);
 	

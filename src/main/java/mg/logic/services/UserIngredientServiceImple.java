@@ -199,18 +199,15 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		Optional<UserIngredient> opUserIngredient = this.userIngreDAL
 				.findById(new UserIngredientKey(userEmail, ingredientId));
 		if (opUserIngredient.isPresent() == false) {
-			System.err.println("opUserIngredient.isPresent() = false");
 			userIngredient = new UserIngredient(new UserIngredientKey(userEmail, ingredientId),
 					this.ingredientService.findById(ingredientId).getData().getName(),
-					IngredientTypeEnum.PREFERRED.name(), 0.0);
+					IngredientTypeEnum.AGREE.name(), 0.0);
 		} else {
 			userIngredient = opUserIngredient.get();
-			System.err.println("***////" + userIngredient);
 		}
 		if (userIngredient.getRate() == null) {
 			userIngredient.setRate(0.0);
 		}
-		System.err.println("----------------" + userIngredient.getRate());
 		userIngredient.setRate(userIngredient.getRate() + delta);
 		if (userIngredient.getRate() <= 10 && userIngredient.getRate() >= 0)
 			this.userIngreDAL.save(userIngredient);
@@ -273,6 +270,11 @@ public class UserIngredientServiceImple implements UserIngredientService {
 		}
 
 		return rv;
+	}
+
+	@Override
+	public List<UserIngredient> getUserIngredientsNotForb(String userEmail) {
+		return this.userIngreDAL.findAllById_UserEmailAndTypeNotLike(userEmail, IngredientTypeEnum.FORBIDDEN.name());
 	}
 
 }

@@ -162,8 +162,7 @@ class MenuControllerTests {
 			if (indexBefore == -1) {
 				assertThat(i.getRate()).isEqualTo(ingredientsInstances.get(i.getId().getIngredientId()) * 0.5);
 			} else {
-				System.err.println("---afterAddPreferredIngredients:" + i);
-				System.err.println("---beforeAddPreferredIngredients" + beforeAddPreferredIngredients.get(indexBefore));
+
 				int numOfIngredientsInstances = ingredientsInstances.getOrDefault(i.getId().getIngredientId(), 0);
 
 				assertThat(i.getRate()).isEqualTo(beforeAddPreferredIngredients.get(indexBefore).getRate()

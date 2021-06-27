@@ -16,6 +16,8 @@ public interface UserIngredientDataAccessRepo extends JpaRepository<UserIngredie
 	public List<UserIngredient> findAllByTypeAndId_UserEmail(@Param("type") String type,
 			@Param("user_email") String userEmail, Pageable pageRequest);
 
+	public List<UserIngredient> findAllById_UserEmailAndTypeNotLike(String userEmail,String noType);
+	
 	public List<UserIngredient> deleteByTypeAndId_UserEmail(@Param("type") String type,
 			@Param("user_email") String userEmail);
 

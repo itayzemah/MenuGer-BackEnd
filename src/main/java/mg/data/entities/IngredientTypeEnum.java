@@ -1,5 +1,5 @@
 package mg.data.entities;
 
 public enum IngredientTypeEnum {
-	PREFERRED,FORBIDDEN
+	PREFERRED,FORBIDDEN,AGREE
 }
